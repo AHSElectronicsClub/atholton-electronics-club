@@ -57,9 +57,9 @@ export const MENTORS_DATA: Mentor[] = [
 export const TEAM_DATA: TeamMember[] = [
   { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead', imageUrl: '/images/anwar.jpg' },
   { id: 2, name: 'Austen Shaheen', title: 'President / Electrical Team Lead', imageUrl: '/images/austen.jpg' },
-  { id: 3, name: 'Timothy Ward', title: 'Mechanical Team Lead', imageUrl: '/images/timothy.jpg' },
-  { id: 4, name: 'Simar Arri', title: 'Vice President / Electrical Team Co-Lead', imageUrl: '/images/simar.jpg' },
-  { id: 5, name: 'Sean Embley', title: 'Software Team Lead', imageUrl: '/images/sean.jpg' },
+  { id: 3, name: 'Sean Embley', title: 'Software Team Lead', imageUrl: '/images/sean.jpg' },
+  { id: 4, name: 'Timothy Ward', title: 'Mechanical Team Co-Lead', imageUrl: '/images/timothy.jpg' },
+  { id: 5, name: 'Simar Arri', title: 'Vice President / Electrical Team Co-Lead', imageUrl: '/images/simar.jpg' },
   { id: 6, name: 'Shalin Vakil', title: 'Vice President / Software Team Co-Lead', imageUrl: '/images/shalin.jpg' },
   { id: 7, name: 'Ayaan Kalra', title: 'Outreach / Lead Web Developer', imageUrl: '/images/ayaan.jpg' },
   

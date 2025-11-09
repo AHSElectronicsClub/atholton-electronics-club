@@ -50,7 +50,7 @@ export const EVENTS_DATA: Event[] = [
 ];
 
 export const MENTORS_DATA: Mentor[] = [
-  { id: 1, name: 'Arif Khan', title: 'Mentor / Software Engineer', bio: 'Arif is a software engineer at Dundics Enterprises with experience in multiple programming languages (Python, C++, C Sharp). He specialized in distributed computing architectures and expiremental research.', officeHours: 'By Appointment', imageUrl: '/images/arif-khan.jpg' },
+  { id: 1, name: 'Arif Khan', title: 'Mentor / Software Engineer', bio: 'Arif is a software engineer at Dundics Enterprises with experience in multiple programming languages (Python, C++, C Sharp). He specializes in distributed computing architectures and expiremental research.', officeHours: 'By Appointment', imageUrl: '/images/arif-khan.jpg' },
   { id: 2, name: 'Radhika Wijetunge', title: 'Project Manager, Stormwater Management Division', bio: "Radhika is a Project Manager with the Stormwater Management Division of Howard County's Department of Public Works' Bureau of Environmental Services. A civil engineer with degrees from Princeton and Yale, graduate work at MIT, and expertise in computer mapping and modeling.", officeHours: 'By Appointment', imageUrl: '/images/radhika.jpg' }
 ];
 

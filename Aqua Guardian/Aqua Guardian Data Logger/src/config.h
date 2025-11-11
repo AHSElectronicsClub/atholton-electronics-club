@@ -37,13 +37,22 @@ extern const char *gprsPass;
 #define PIN_MODEM_TX 17       // Shield TX -> A7670E RX
 #define PIN_MODEM_RX 16       // Shield RX -> A7670E TX
 
-// -- Analog Sensor Pins --
-#define PIN_PH 36        // ADC1_CH0 (VN)
-#define PIN_DO 39        // ADC1_CH3 (VP)
-#define PIN_EC 34        // ADC1_CH6
-#define PIN_TURBIDITY 35 // ADC1_CH7
-#define PIN_ORP 32       // ADC1_CH4
-#define PIN_WATER_LEAK 33 // ADC1_CH5
+// -- Analog Sensor Pins (Verified) --
+#define PIN_PH 36         // Shield A0 / GPIO 36 (ADC1_CH0)
+#define PIN_DO 39         // Shield A1 / GPIO 39 (ADC1_CH3)
+#define PIN_EC 34         // Shield A2 / GPIO 34 (ADC1_CH6)
+#define PIN_TURBIDITY 35  // Shield A3 / GPIO 35 (ADC1_CH7)
+#define PIN_ORP 15        // Shield A4 / GPIO 15 (ADC2_CH3) - *** FIX ***
+
+// -- 12V Water Leak Sensor Pins --
+// We need two pins for this sensor as per our circuit
+#define PIN_LEAK_POWER 25 // Shield D2 / GPIO 25 (Controls MOSFET switch)
+#define PIN_WATER_LEAK 26 // Shield D3 / GPIO 26 (Reads sensor signal) - *** FIX ***
+
+// -- DS18B20 Temp Sensor (OneWire Bus) --
+#define PIN_ONE_WIRE_BUS 27 // Shield D14 / GPIO 27 (Valid pin)
+
+// -- Other Settings --
 #define DEFAULT_VREF 3300.0 // 3.3V VREF in mV
 
 // -- DS18B20 Temp Sensor (OneWire Bus)

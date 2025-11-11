@@ -193,5 +193,5 @@ void go_to_sleep() {
  * The device spends all its time in setup() or deep_sleep().
  */
 void loop() {
-    // This should never be reached :/
+    // This should never be reached :)
 }

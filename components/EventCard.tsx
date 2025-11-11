@@ -15,18 +15,20 @@ export default function EventCard({ event }: { event: Event }) {
         </div>
         <p className="text-gray-700 text-sm mb-6">{event.description}</p>
         <div className="flex flex-col sm:flex-row gap-3">
-          <button
+          {/*<button
             onClick={() => alert('RSVP modal would open here.')}
             className="px-4 py-2 bg-teal text-navy rounded-md"
           >
             Reserve Spot
-          </button>
-          <button
-            onClick={() => alert('ICS download would start here.')}
+          </button>*/}
+          <a
+            href={event.calendarLink} // <-- Now it's dynamic
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-4 py-2 border-2 border-teal rounded-md"
           >
             Add to Calendar
-          </button>
+          </a>
         </div>
       </div>
     </div>

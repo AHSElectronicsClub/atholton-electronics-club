@@ -14,7 +14,7 @@ export default function Footer() {
             </div>
             <p className="text-sm">Engineering solutions for our community.</p>
             <div className="flex space-x-4 mt-6">
-              <a href="https://github.com/atholton-e-club" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">GitHub</a>
+              <a href="https://github.com/AHSElectronicsClub/atholton-electronics-club" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">GitHub</a>
               <a href="https://instagram.com/ahselectronic" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Instagram</a>
             </div>
           </div>

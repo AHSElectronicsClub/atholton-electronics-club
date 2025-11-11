@@ -44,31 +44,30 @@ We believe that building a high-impact, open-source technology is a direct way t
 export const ALL_TAGS = Array.from(new Set(PROJECTS_DATA.flatMap(p => p.tags))).sort();
 
 export const EVENTS_DATA: Event[] = [
-  { id: 1, title: 'Weekly Meeting & Open Lab', date: 'Every Wednesday', time: '2:40 PM – 3:40 PM', location: 'Room E172 (The "Makerspace")', description: "Our regular weekly meeting...", organizer: 'Dr. Evelyn Reed', contact: 'ereed@atholton.edu' },
-  { id: 2, title: 'Workshop: Intro to Soldering', date: 'Friday, November 14, 2025', time: '4:00 PM – 6:00 PM', location: 'Electronics Bench (Room E172)', description: 'Learn through-hole soldering...', organizer: 'Jane Doe', contact: 'jane.doe@student.atholton.edu' },
-  { id: 3, title: 'Guest Speaker: Chesapeake Bay Foundation', date: 'Tuesday, November 25, 2025', time: '1:00 PM (Lunch Period)', location: 'Auditorium', description: 'A field researcher will discuss water quality monitoring', organizer: 'Dr. Evelyn Reed', contact: 'ereed@atholton.edu' }
+  { id: 1, title: 'Weekly Meeting & Open Lab', date: 'Every Wednesday', time: '2:40 PM – 3:40 PM', location: 'Room E172 (The "Makerspace")', description: "Our regular weekly meeting...", organizer: 'Dr. Evelyn Reed', contact: 'ereed@atholton.edu', calendarLink: 'https://calendar.app.google/u5trzue6ms8Tbqq79' },
+  { id: 2, title: 'Workshop: Intro to Soldering', date: 'Friday, November 14, 2025', time: '4:00 PM – 6:00 PM', location: 'Electronics Bench (Room E172)', description: 'Learn through-hole soldering...', organizer: 'Jane Doe', contact: 'jane.doe@student.atholton.edu', calendarLink: 'https://calendar.app.google/qRb3MeRJ4EHVdV949' },
+  { id: 3, title: 'Guest Speaker: Chesapeake Bay Foundation', date: 'Tuesday, November 25, 2025', time: '1:00 PM (Lunch Period)', location: 'Auditorium', description: 'A field researcher will discuss water quality monitoring', organizer: 'Dr. Evelyn Reed', contact: 'ereed@atholton.edu', calendarLink: 'https://calendar.app.google/cF5yJi5a45Xdn7xc8' }
 ];
 
 export const MENTORS_DATA: Mentor[] = [
-  { id: 1, name: 'Arif Khan', title: 'Mentor / Software Engineer', bio: 'Arif is a software engineer at Dundalk Enterprises with experience in multiple programming languages (Python, JavaScript, C++). He mentors students on software architecture, IoT backends, and coding best practices.', officeHours: 'By Appointment', imageUrl: '/images/arif-khan.jpg' },
+  { id: 1, name: 'Arif Khan', title: 'Mentor / Software Engineer', bio: 'Arif is a software engineer at Dundics Enterprises with experience in multiple programming languages (Python, C++, C Sharp). He specializes in distributed computing architectures and expiremental research.', officeHours: 'By Appointment', imageUrl: '/images/arif-khan.jpg' },
   { id: 2, name: 'Radhika Wijetunge', title: 'Project Manager, Stormwater Management Division', bio: "Radhika is a Project Manager with the Stormwater Management Division of Howard County's Department of Public Works' Bureau of Environmental Services. A civil engineer with degrees from Princeton and Yale, graduate work at MIT, and expertise in computer mapping and modeling.", officeHours: 'By Appointment', imageUrl: '/images/radhika.jpg' }
 ];
 
 export const TEAM_DATA: TeamMember[] = [
   { id: 1, name: 'Austen Shaheen', title: 'President / Electrical Team Lead', imageUrl: '/images/austen.jpg' },
   { id: 2, name: 'Anwar Khan', title: 'President / Mechanical Team Lead', imageUrl: '/images/anwar.jpg' },
-  { id: 3, name: 'Timothy Ward', title: 'Mechanical Team Lead', imageUrl: '/images/timothy.jpg' },
-  { id: 4, name: 'Simar Arri', title: 'Vice President / Electrical Team Lead', imageUrl: '/images/simar.jpg' },
-  { id: 5, name: 'Shalin Vakil', title: 'Vice President / Software Team Lead', imageUrl: '/images/shalin.jpg' },
-  { id: 6, name: 'Sean Embley', title: 'Software Team Lead', imageUrl: '/images/sean.jpg' },
-  { id: 7, name: 'Ayaan Kalra', title: 'Outreach / Lead Web Developer', imageUrl: '/images/ayaan.jpg' },
-  
+  { id: 3, name: 'Simar Arri', title: 'Vice President / Electrical Team Lead', imageUrl: '/images/simar.jpg' },
+  { id: 4, name: 'Shalin Vakil', title: 'Vice President / Software Team Lead', imageUrl: '/images/shalin.jpg' },
+  { id: 5, name: 'Ayaan Kalra', title: 'Outreach / Lead Web Developer', imageUrl: '/images/ayaan.jpg' },
+  { id: 6, name: 'Sean Embley', title: 'Software Team Co-Lead', imageUrl: '/images/sean.jpg' }, 
+  { id: 7, name: 'Timothy Ward', title: 'Mechanical Team Co-Lead', imageUrl: '/images/timothy.jpg' },
 ];
 
 export const RESOURCES_DATA = [
-  { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects...', link: '#', type: 'code' },
+  { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects...', link: 'https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
   { id: 101, title: 'DFRobot', description: 'Our primary parts supplier.', link: 'https://www.dfrobot.com/', type: 'supplier' },
-  { id: 2, title: 'Soldering 101 Cheatsheet', description: 'A printable 1-page PDF guide.', link: '#', type: 'cheatsheet' }
+  //{ id: 2, title: 'Soldering 101 Cheatsheet', description: 'A printable 1-page PDF guide.', link: '#', type: 'cheatsheet' }
 ];
 
 /**

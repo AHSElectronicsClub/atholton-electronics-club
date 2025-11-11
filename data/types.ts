@@ -37,4 +37,5 @@ export type Event = {
   description: string;
   organizer: string;
   contact: string;
+  calendarLink?: string;
 };

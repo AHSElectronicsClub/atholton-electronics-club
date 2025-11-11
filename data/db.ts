@@ -66,7 +66,7 @@ export const TEAM_DATA: TeamMember[] = [
 ];
 
 export const RESOURCES_DATA = [
-  { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects...', link: https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
+  { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects...', link: 'https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
   { id: 101, title: 'DFRobot', description: 'Our primary parts supplier.', link: 'https://www.dfrobot.com/', type: 'supplier' },
   { id: 2, title: 'Soldering 101 Cheatsheet', description: 'A printable 1-page PDF guide.', link: '#', type: 'cheatsheet' }
 ];

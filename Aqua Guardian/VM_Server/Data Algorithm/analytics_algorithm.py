@@ -418,7 +418,7 @@ def calculate_nutrient_indicator(df_processed_timeframe: pd.DataFrame,
     if pd.notna(do_mean) and do_baseline:
         if (do_mean / do_baseline) < 0.7: # 30% below baseline
             score += 40
-            analysis_parts.append("Low DO (30%+ below normal).")
+            analysis_parts.append("Low DO (30%+ below normal)..")
         elif (do_mean / do_baseline) < 0.85: # 15% below baseline
             score += 20
             analysis_parts.append("Depressed DO (15%+ below normal).")
@@ -544,10 +544,8 @@ def get_dashboard_data(buoy_id: str, timeframe_start: str, timeframe_end: str,
         # This will be merged with the raw data and z-score data
         flag_columns = ['timestamp', 'is_rain_affected_Turbidity', 'is_rain_affected_pH'] + \
                        [col for col in df_processed_timeframe.columns if col.endswith('_weight')]
-        # Make sure 'timestamp' is in the columns before selecting
-        if 'timestamp' not in df_processed_timeframe.columns:
-             df_processed_timeframe.reset_index(inplace=True)
-             
+
+        # We know from handle_rain_effects that 'timestamp' is a column
         df_flags = df_processed_timeframe[flag_columns]
 
         # 6. Calculate Dashboard Metrics
@@ -736,11 +734,11 @@ if __name__ == "__main__":
         import json
         print(json.dumps(dashboard_data, indent=2, default=str))
 
-        print("\n--- Z-Score Example (from timeframe 20-24) ---")
+        print("\n--- Z-Score Example (from timeframe 19-24) ---")
         # Show the Z-scores around the rain event
         zscores_output = dashboard_data.get('dashboard_metrics', {}).get('raw_data_zscores', [])
         for row in zscores_output[19:25]: # Print hours 19 through 24
-            print(row)
+            print(f"Time: {row['timestamp']}, Turbidity Z-Score: {row.get('Turbidity'):.2f}, Rain Flag: {row.get('is_rain_affected_Turbidity')}")
             
     except psycopg2.Error as e:
         print(f"\n--- TEST FAILED ---")

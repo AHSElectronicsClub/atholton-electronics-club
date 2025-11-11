@@ -62,6 +62,7 @@ export const TEAM_DATA: TeamMember[] = [
   { id: 5, name: 'Ayaan Kalra', title: 'Outreach / Lead Web Developer', imageUrl: '/images/ayaan.jpg' },
   { id: 6, name: 'Sean Embley', title: 'Software Team Co-Lead', imageUrl: '/images/sean.jpg' }, 
   { id: 7, name: 'Timothy Ward', title: 'Mechanical Team Co-Lead', imageUrl: '/images/timothy.jpg' },
+
 ];
 
 export const RESOURCES_DATA = [

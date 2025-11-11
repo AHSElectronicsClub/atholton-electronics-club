@@ -7,6 +7,8 @@ import AquaGuardianPanel from '../components/AquaGuardianPanel';
 import Modal from '../components/Modal';
 import ProjectModalContent from '../components/ProjectModalContent';
 import { PROJECTS_DATA, EVENTS_DATA } from '../data/db';
+import BuoyDataCard from '../components/BuoyDataCard';
+
 
 export default function HomePage() {
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
@@ -25,7 +27,7 @@ export default function HomePage() {
 
       {/* Aqua Guardian Panel */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <AquaGuardianPanel />
+        <BuoyDataCard />
       </div>
 
       {/* Projects Section */}

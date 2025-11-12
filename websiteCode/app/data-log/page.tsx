@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 // We'll re-use your PageContainer component
-import PageContainer from '@/components/PageContainer'; 
+import PageContainer from '../../components/PageContainer';
 
 // This type must match the data from our new API
 type HistoryLog = {

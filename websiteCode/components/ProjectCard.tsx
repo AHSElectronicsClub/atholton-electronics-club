@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 //import { GithubIcon } from './Icons';
-import type { Project } from '@/Website code/data/types';
+import type { Project } from '@/data/types';
 
 export default function ProjectCard({ project, onClick }: { project: Project, onClick?: () => void }) {
   return (

@@ -1,9 +1,10 @@
 /**
  * @file sensors.cpp
  * @brief Implementation file for all sensor interactions.
- * * Includes DS18B20, pH, DO, EC, Turbidity, and ORP.
- * * @version 3.0 - FINAL SYNC
- * @date 2025-11-08
+ * * Includes DS18B20, pH, DO, EC, Turbidity, ORP, and 12V Water Leak.
+ *
+ * @version 3.1 - Patched 12V water leak sensor logic.
+ * @date 2025-11-11
  */
 
 // --- THIS IS A CRITICAL FIX ---
@@ -44,7 +45,12 @@ bool sensors_init() {
     pinMode(PIN_EC, INPUT);
     pinMode(PIN_TURBIDITY, INPUT);
     pinMode(PIN_ORP, INPUT);
-    pinMode(PIN_WATER_LEAK, INPUT);
+    
+    // --- FIX: Initialize the 12V Water Leak Sensor Pins ---
+    pinMode(PIN_WATER_LEAK, INPUT);        // This is the signal read pin
+    pinMode(PIN_LEAK_POWER, OUTPUT);       // This is the power control pin
+    digitalWrite(PIN_LEAK_POWER, LOW); // Ensure sensor is OFF by default
+    // ----------------------------------------------------
 
     Serial.println("Sensors initialized.");
     return true;
@@ -69,10 +75,23 @@ void sensors_get_initial_data(SensorReadings& session_data) {
         Serial.println("No GPS fix.");
     }
 
-    // Check water leak sensor
-    session_data.water_leak = (digitalRead(PIN_WATER_LEAK) == HIGH);
+    // --- FIX: Power on and read the 12V water leak sensor ---
+    Serial.println("Checking for water leak...");
+    digitalWrite(PIN_LEAK_POWER, HIGH); // Turn ON the 12V MOSFET switch
+    delay(100);                         // Wait 100ms for the sensor to stabilize
+    
+    // Read the sensor's signal pin
+    // NOTE: This logic assumes a HIGH signal means a leak.
+    // You may need to change this to LOW depending on your sensor's relay wiring.
+    session_data.water_leak = (digitalRead(PIN_WATER_LEAK) == HIGH); 
+    
+    digitalWrite(PIN_LEAK_POWER, LOW);  // Turn OFF the 12V MOSFET switch
+    // ------------------------------------------------------
+    
     if(session_data.water_leak) {
         Serial.println("WARNING: Water leak detected!");
+    } else {
+        Serial.println("No leak detected.");
     }
 
     session_data.sample_count = 0;
@@ -80,6 +99,8 @@ void sensors_get_initial_data(SensorReadings& session_data) {
 
 /**
  * @brief Reads all sensors and populates a SensorSample struct.
+ * (Note: This function does NOT check the 12V leak sensor,
+ * as that is a high-power operation done once in sensors_get_initial_data)
  */
 void sensors_read_all(SensorSample& sample) {
     // --- Read DS18B20 Temperature ---
@@ -120,6 +141,6 @@ void sensors_read_all(SensorSample& sample) {
     sample.orp = (orp_voltage * 1.0) + ORP_OFFSET; // EXAMPLE CALCULATION
 
     // Print values
-    Serial.printf("  Temp: %.2fC, pH: %.2f, DO: %.2f, EC: %.2f, Turb: %.2f, ORP: %.2f\n",
+    Serial.printf(" Temp: %.2fC, pH: %.2f, DO: %.2f, EC: %.2f, Turb: %.2f, ORP: %.2f\n",
         sample.temp, sample.ph, sample.in_do, sample.ec, sample.turb, sample.orp);
 }

@@ -1,4 +1,4 @@
-//
+/*
 // 📍 FILE: websiteCode/app/data-log/page.tsx (NEW FILE)
 //
 'use client'; // This page must be a client component to fetch data
@@ -108,4 +108,4 @@ export default function DataLogPage() {
       {renderContent()}
     </PageContainer>
   );
-}
+}*/

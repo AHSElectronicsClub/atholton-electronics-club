@@ -1,40 +1,54 @@
 //
-// 📍 FILE: app/api/ingest/route.ts
+// 📍 FILE: websiteCode/app/api/ingest/route.ts
 //
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
 
-// This is a secret key. In Vercel, go to Settings -> Environment Variables
-// and add one called 'BUOY_SECRET_KEY' with a long, random password.
+// This reads the secret key you set up in Vercel
 const BUOY_SECRET_KEY = process.env.BUOY_SECRET_KEY;
 
 export async function POST(request: Request) {
   // 1. Check for the secret key
-  // The buoy must send an 'Authorization' header with the value 'Bearer YOUR_KEY'
   const authHeader = request.headers.get('Authorization');
   if (authHeader !== `Bearer ${BUOY_SECRET_KEY}`) {
     // If the key is wrong, send a "401 Unauthorized" error
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  // 2. Get the telemetry data from the buoy's POST request
-  // The buoy should send JSON like: { "telemetry": { "waterTemp": 18.5, ... } }
+  // 2. Get data from the buoy and create a timestamp
   const body = await request.json();
-  const telemetryData = body.telemetry;
+  const telemetryData = body.telemetry; // e.g., { waterTemp: 18.5, ... }
+  const timestamp = new Date().toISOString();
 
-  // 3. Add a timestamp and set the online status
-  const dataToStore = {
-    telemetry: telemetryData, // This is the { waterTemp: ..., ... } object
-    status: {
-      online_status: 'Online', // If we're getting data, it's online
-    },
-    last_updated: new Date().toISOString(),
+  // 3. Prepare the two data objects we need to save
+  
+  // Object 1: For the LIVE homepage card
+  const dataForLiveCard = {
+    telemetry: telemetryData,
+    status: { online_status: 'Online' },
+    last_updated: timestamp,
   };
 
-  // 4. Save this complete object to the Vercel KV database
-  // It will be stored under the key 'latest_buoy_data'
-  await kv.set('latest_buoy_data', dataToStore);
+  // Object 2: For the HISTORY log page
+  const dataForHistoryLog = {
+    timestamp: timestamp,
+    ...telemetryData, // This adds waterTemp, turbidity, etc.
+  };
 
-  // 5. Send a "Success" response back to the buoy so it knows the data was received
-  return NextResponse.json({ success: true, message: "Data ingested" });
+  // 4. Execute both database commands
+  try {
+    // Command A: Save the "latest" data (overwrites old data)
+    await kv.set('latest_buoy_data', dataForLiveCard);
+
+    // Command B: Add to the "history" list (preserves old data)
+    await kv.lpush('buoy_data_history', dataForHistoryLog);
+
+  } catch (error) {
+    console.error("Failed to save data to KV:", error);
+    // If the database fails, send an error back to the buoy
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+
+  // 5. Send a "Success" response back to the buoy
+  return NextResponse.json({ success: true, message: "Data ingested to live and history logs" });
 }

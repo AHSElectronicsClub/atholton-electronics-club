@@ -10,6 +10,7 @@ export default function Header() {
     { name: 'About', href: '/about' },
     { name: 'Projects', href: '/projects' },
     { name: 'Resources', href: '/resources' },
+    //{ name: 'Data Log', href: '/data-log' },
     { name: 'Contact', href: '/contact' }
   ];
   const groupme = "https://groupme.com/join_group/110257950/WJX63DOF";

@@ -1,5 +1,4 @@
 // components/ResourcesSection.tsx
-
 import React from 'react';
 import { RESOURCES_DATA } from '@/data/db'; 
 import CodeSnippet from '@/components/CodeSnippet'; 

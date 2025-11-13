@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Button from './Button';
 import SparklesIcon from './Icons';
 import GeminiResponseDisplay from './GeminiResponseDisplay';
-import type { Project } from '@/Website code/data/types';
+import type { Project } from '@/data/types';
 import { callGeminiApi } from '../data/db';
 
 export default function ProjectModalContent({ project, onClose }: { project: Project, onClose: ()=>void }) {

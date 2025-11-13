@@ -1,0 +1,6 @@
+# Ignore generated folders
+node_modules/
+.next/
+
+# Ignore Mac junk
+.DS_Store

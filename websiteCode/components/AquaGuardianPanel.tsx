@@ -17,7 +17,7 @@ export default function AquaGuardianPanel() {
   }, []);
 
   return (
-    <div className="bg-navy-dark rounded-xl shadow-2xl p-6 border-2 border-teal/30">
+    <div className="bg-forest-dark rounded-xl shadow-2xl p-6 border-2 border-gold/30">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold text-white font-display">Aqua Guardian: Live Data</h3>
         <div className="flex items-center space-x-2">
@@ -28,16 +28,16 @@ export default function AquaGuardianPanel() {
       <p className="text-sm text-gray-400 mb-6">Simulated telemetry from our environmental monitoring buoy.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="text-center bg-navy-light p-4 rounded-lg">
-          <div className="text-sm text-gray-300 mb-1">Water Temp</div>
+        <div className="text-center bg-forest-light p-4 rounded-lg">
+          <div className="text-sm text-off-white mb-1">Water Temp</div>
           <div className="text-4xl font-bold text-orange tracking-tight">{telemetry.temp}<span className="text-2xl opacity-70">°C</span></div>
         </div>
-        <div className="text-center bg-navy-light p-4 rounded-lg">
-          <div className="text-sm text-gray-300 mb-1">Turbidity</div>
-          <div className="text-4xl font-bold text-teal tracking-tight">{telemetry.turbidity}<span className="text-2xl opacity-70"> NTU</span></div>
+        <div className="text-center bg-forest-light p-4 rounded-lg">
+          <div className="text-sm text-off-white mb-1">Turbidity</div>
+          <div className="text-4xl font-bold text-gold tracking-tight">{telemetry.turbidity}<span className="text-2xl opacity-70"> NTU</span></div>
         </div>
-        <div className="text-center bg-navy-light p-4 rounded-lg">
-          <div className="text-sm text-gray-300 mb-1">Algae Sensor</div>
+        <div className="text-center bg-forest-light p-4 rounded-lg">
+          <div className="text-sm text-off-white mb-1">Algae Sensor</div>
           <div className="text-4xl font-bold text-white tracking-tight">{telemetry.algae}<span className="text-2xl opacity-70"> mV</span></div>
         </div>
       </div>

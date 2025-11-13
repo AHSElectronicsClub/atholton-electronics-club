@@ -29,8 +29,8 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <PageContainer title="Club Projects" icon={<LayersIcon name="layers" className="w-8 h-8 text-teal" />}>
-        <div className="bg-white p-6 rounded-xl shadow-lg mb-12">
+      <PageContainer title="Club Projects" icon={<LayersIcon name="layers" className="w-8 h-8 text-gold" />}>
+        <div className="bg-off-white p-6 rounded-xl shadow-lg mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">Search Projects</label>
@@ -40,7 +40,7 @@ export default function ProjectsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Tag</label>
               <div className="flex flex-wrap gap-2">
                 {ALL_TAGS.map(tag => (
-                  <button key={tag} onClick={() => toggleTag(tag)} className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${activeTags.includes(tag) ? 'bg-navy text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>{tag}</button>
+                  <button key={tag} onClick={() => toggleTag(tag)} className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${activeTags.includes(tag) ? 'bg-forest text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>{tag}</button>
                 ))}
               </div>
             </div>

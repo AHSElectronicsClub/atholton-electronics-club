@@ -57,7 +57,7 @@ export default function DataLogPage() {
 
     // -- Data Table --
     return (
-      <div className="bg-white p-4 rounded-lg shadow-lg overflow-x-auto">
+      <div className="bg-off-white p-4 rounded-lg shadow-lg overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -75,10 +75,10 @@ export default function DataLogPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-off-white divide-y divide-gray-200">
             {data.map((log, index) => (
               <tr key={index}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-gray">
                   {new Date(log.timestamp).toLocaleString('en-US', { timeZone: 'UTC' })}
                 </td>
                 <td className="px-6 py-4 whitespace-rowrap text-sm text-gray-500">

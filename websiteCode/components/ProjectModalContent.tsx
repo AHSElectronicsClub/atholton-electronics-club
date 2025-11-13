@@ -39,21 +39,21 @@ export default function ProjectModalContent({ project, onClose }: { project: Pro
         </div>
 
         <div className="p-8 max-h-[85vh] overflow-y-auto">
-          <h2 className="text-3xl font-bold font-display text-navy mb-4">{project.title}</h2>
+          <h2 className="text-3xl font-bold font-display text-forest mb-4">{project.title}</h2>
           <div className="flex flex-wrap gap-2 mb-6">
-            {project.tags.map(tag=> <span key={tag} className="inline-block bg-teal text-navy text-sm font-bold px-3 py-1 rounded-full">{tag}</span>)}
+            {project.tags.map(tag=> <span key={tag} className="inline-block bg-teal text-forest text-sm font-bold px-3 py-1 rounded-full">{tag}</span>)}
           </div>
 
-          <h4 className="text-lg font-semibold font-display text-navy mt-6 mb-2">Project Summary</h4>
+          <h4 className="text-lg font-semibold font-display text-forest mt-6 mb-2">Project Summary</h4>
           <p className="text-gray-700 leading-relaxed">{project.description}</p>
 
-          <h4 className="text-lg font-semibold font-display text-navy mt-6 mb-2">Parts List</h4>
+          <h4 className="text-lg font-semibold font-display text-forest mt-6 mb-2">Parts List</h4>
           <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm">
             {project.partsList.map(part=> <li key={part}>{part}</li>)}
           </ul>
 
-          <div className="bg-gray-100 p-6 rounded-lg mt-8 border border-teal/30">
-            <h4 className="text-lg font-semibold text-navy mb-4 flex items-center">
+          <div className="bg-gray-100 p-6 rounded-lg mt-8 border border-gold/30">
+            <h4 className="text-lg font-semibold text-forest mb-4 flex items-center">
               <span className="mr-2">✨</span> AI Project Helper
             </h4>
             <p className="text-sm text-gray-600 mb-4">Get ideas from our AI assistant!</p>

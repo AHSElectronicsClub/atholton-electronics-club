@@ -9,7 +9,7 @@ export default function AboutPage() {
 
       {/* Our Story Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-navy mb-4">Our Story</h2>
+        <h2 className="text-2xl font-semibold text-forest mb-4">Our Story</h2>
         <p className="text-gray-700 leading-relaxed mb-2">
           Founded in 2025 at Atholton High School, the Atholton Electronics Club was established to provide students with hands-on experience in electrical engineering and applied technology.
         </p>
@@ -20,7 +20,7 @@ export default function AboutPage() {
 
       {/* Our Mission Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-navy mb-4">Our Mission</h2>
+        <h2 className="text-2xl font-semibold text-forest mb-4">Our Mission</h2>
         <p className="text-gray-700 leading-relaxed">
           The Atholton Electronics Club is dedicated to providing students with hands-on experience in electronics, programming, and environmental technology. 
           We build real-world projects, mentor each other, and contribute to our local community through technology and innovation.
@@ -29,18 +29,18 @@ export default function AboutPage() {
 
       {/* Team Members Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-navy mb-8">Our Team</h2>
+        <h2 className="text-2xl font-semibold text-forest mb-8">Our Team</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {TEAM_DATA.map(member => (
-            <div key={member.id} className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-2xl transition-shadow">
+            <div key={member.id} className="bg-off-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-2xl transition-shadow">
               <img
                 src={member.imageUrl}
                 alt={member.name}
                 className="w-32 h-32 rounded-full mb-4 object-cover"
                 onError={(e: any) => (e.target.src = 'https://placehold.co/400x400?text=No+Image')}
               />
-              <h3 className="text-xl font-semibold text-navy mb-1">{member.name}</h3>
-              <p className="text-teal font-medium">{member.title}</p>
+              <h3 className="text-xl font-semibold text-forest mb-1">{member.name}</h3>
+              <p className="text-gold font-medium">{member.title}</p>
             </div>
           ))}
         </div>
@@ -48,12 +48,12 @@ export default function AboutPage() {
 
       {/* Mentors Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-navy mb-8">Our Mentors</h2>
+        <h2 className="text-2xl font-semibold text-forest mb-8">Our Mentors</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {MENTORS_DATA.map(mentor => (
             <div
               key={mentor.id}
-              className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-2xl transition-shadow"
+              className="bg-off-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-2xl transition-shadow"
             >
               <img
                 src={mentor.imageUrl}
@@ -61,8 +61,8 @@ export default function AboutPage() {
                 className="w-32 h-32 rounded-full mb-4 object-cover"
                 onError={(e: any) => (e.target.src = 'https://placehold.co/400x400?text=No+Image')}
               />
-              <h3 className="text-xl font-semibold text-navy mb-1">{mentor.name}</h3>
-              <p className="text-teal font-medium mb-2">{mentor.title}</p>
+              <h3 className="text-xl font-semibold text-forest mb-1">{mentor.name}</h3>
+              <p className="text-gold font-medium mb-2">{mentor.title}</p>
               <p className="text-gray-700 text-base mb-2">{mentor.bio}</p>
             </div>
           ))}
@@ -71,7 +71,7 @@ export default function AboutPage() {
 
       {/* Code of Conduct Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-navy mb-4">Code of Conduct</h2>
+        <h2 className="text-2xl font-semibold text-forest mb-4">Code of Conduct</h2>
         <ul className="text-gray-700 list-disc list-inside space-y-2">
           <li>The Atholton Electronics Club is dedicated to providing a harassment-free experience for everyone, regardless of gender, gender identity, sexual orientation, disability, physical appearance, body size, race, or religion.</li>
           <li>Be respectful, inclusive, and collaborative.</li>

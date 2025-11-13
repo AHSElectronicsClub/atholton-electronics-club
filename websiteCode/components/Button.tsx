@@ -14,9 +14,9 @@ type Props = {
 export default function Button({ children, onClick, variant = 'primary', className = '', href, target, ...props }: Props) {
   const base = 'inline-block px-6 py-3 rounded-lg font-semibold text-center transition-all duration-300 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   const styles: Record<string,string> = {
-    primary: 'bg-teal text-navy hover:bg-orange hover:text-white focus:ring-orange',
-    secondary: 'bg-gray-200 text-navy hover:bg-navy-light hover:text-white focus:ring-teal',
-    outline: 'bg-transparent border-2 border-teal text-teal hover:bg-teal hover:text-navy focus:ring-teal'
+    primary: 'bg-gold text-forest font-bold hover:bg-gold/80 focus:ring-gold',
+    secondary: 'bg-gray-200 text-forest hover:bg-forest-light hover:text-white focus:ring-teal',
+    outline: 'bg-transparent border-2 border-gold text-gold hover:bg-teal hover:text-forest focus:ring-teal'
   };
 
   if (href) {

@@ -5,21 +5,16 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}"
   ],
-  theme: {
-    extend: {
-      colors: {
-        'navy': '#072A40',
-        'navy-light': '#0A3A5A',
-        'navy-dark': '#051E2E',
-        'teal': '#00B7C2',
-        'orange': '#FF7A3D',
-        'gray-light': '#F6F7F9',
-      },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Poppins', 'sans-serif'],
-      },
+ 
+theme: {
+  extend: {
+    colors: {
+      'forest': '#1A472A',      
+      'gold': '#C9A43C',       
+      'off-white': '#F3F4F6',   
+      'dark-gray': '#111827',     
     },
   },
+},
   plugins: [],
 }

@@ -34,7 +34,7 @@ export default function ContactSection() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h2 className="text-3xl font-bold font-display text-navy mb-8">Contact Us</h2>
+      <h2 className="text-3xl font-bold font-display text-forest mb-8">Contact Us</h2>
 
       {submitted && (
         <div className="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
@@ -50,7 +50,7 @@ export default function ContactSection() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-semibold text-navy mb-1">
+          <label htmlFor="name" className="block text-sm font-semibold text-forest mb-1">
             Name
           </label>
           <input
@@ -65,7 +65,7 @@ export default function ContactSection() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-navy mb-1">
+          <label htmlFor="email" className="block text-sm font-semibold text-forest mb-1">
             Email
           </label>
           <input
@@ -80,7 +80,7 @@ export default function ContactSection() {
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-semibold text-navy mb-1">
+          <label htmlFor="message" className="block text-sm font-semibold text-forest mb-1">
             Message
           </label>
           <textarea

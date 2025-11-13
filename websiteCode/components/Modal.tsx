@@ -15,3 +15,4 @@ export default function Modal({ isOpen, onClose, children }: { isOpen: boolean, 
     </div>
   );
 }
+  

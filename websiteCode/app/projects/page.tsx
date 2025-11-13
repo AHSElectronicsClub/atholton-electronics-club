@@ -34,7 +34,7 @@ export default function ProjectsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">Search Projects</label>
-              <input id="search" type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="e.g., 'Aqua Guardian'" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal" />
+              <input id="search" type="text" value={searchTerm} onChange={(e: { target: { value: any; }; }) => setSearchTerm(e.target.value)} placeholder="e.g., 'Aqua Guardian'" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Tag</label>

@@ -21,6 +21,3 @@ export default function CodeSnippet({ codeString, language = 'cpp' }: { codeStri
     </div>
   );
 }
-
-
-

@@ -1,3 +1,11 @@
+Here is the complete HTML file with both requested updates:
+
+1.  The `initializeBaselineTable` function now dynamically calculates the status.
+2.  The `loadSampleData` function now contains a working sample data object to populate the dashboard when the "Use Sample Data" button is clicked.
+
+<!-- end list -->
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -468,24 +476,19 @@
             </div>
         </div>
 
-        <!-- Data Loading Section -->
         <div class="data-loading" id="data-loading">
             <div class="loading-spinner"></div>
             <h2>Loading Dashboard Data</h2>
             <p>Please select how you would like to load the data:</p>
             <div class="file-input-container">
-                <!-- Option 1: Load from local JSON file -->
                 <input type="file" id="json-file-input" accept=".json">
                 <label for="json-file-input">Load from JSON File</label>
                 
-                <!-- Option 2: Use sample data (fallback) -->
                 <button id="use-sample-data">Use Sample Data</button>
             </div>
         </div>
 
-        <!-- Dashboard Content (initially hidden) -->
         <div id="dashboard-content" style="display: none;">
-            <!-- Safety Status and Key Metrics -->
             <div class="metrics-row">
                 <div class="metric-card">
                     <div class="metric-title">Overall Water Quality</div>
@@ -510,9 +513,7 @@
                 </div>
             </div>
 
-            <!-- Main Dashboard Grid -->
             <div class="dashboard-grid">
-                <!-- Raw Sensor Values Graph -->
                 <div class="card">
                     <h2>Raw Sensor Values vs Time</h2>
                     <div id="raw-values-graph" class="chart-container"></div>
@@ -524,14 +525,12 @@
                     </div>
                 </div>
 
-                <!-- Interactive Map -->
                 <div class="card">
                     <h2>Buoy Location</h2>
                     <div id="map" class="map-container"></div>
                     <div class="timestamp">Location as of selected timeframe: <span id="map-timestamp">Loading...</span></div>
                 </div>
 
-                <!-- Deviation from Baseline Graph -->
                 <div class="card">
                     <h2>Deviation from Baselines</h2>
                     <div id="deviation-graph" class="chart-container"></div>
@@ -543,7 +542,6 @@
                     </div>
                 </div>
 
-                <!-- Moving Average Graph -->
                 <div class="card">
                     <h2>Moving Average Trends</h2>
                     <div id="moving-avg-graph" class="chart-container"></div>
@@ -556,7 +554,6 @@
                 </div>
             </div>
 
-            <!-- Baseline Data Table -->
             <div class="card">
                 <h2>Sensor Baselines and Standard Deviations</h2>
                 <table class="baseline-table" id="baseline-table">
@@ -569,8 +566,7 @@
                         </tr>
                     </thead>
                     <tbody id="baseline-tbody">
-                        <!-- Will be populated by JavaScript -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -617,11 +613,49 @@
             reader.readAsText(file);
         }
 
-        // Load sample data (fallback)
+        // *** MODIFIED FUNCTION: Load sample data (fallback) ***
         function loadSampleData() {
-            // In a real implementation, you would fetch from a local file or use a small sample
-            alert('Please use the JSON file upload option to load your data file.');
+            console.log("Loading sample data...");
+            const sampleData = {
+                "buoy_id": "Sample-001",
+                "gps_coordinates": { "latitude": 40.7128, "longitude": -74.0060 },
+                "water_leak": false,
+                "derived_metrics": {
+                    "water_quality_status": "Yellow",
+                    "algae_bloom_risk": { "risk_score": 30, "analysis": "Slight risk detected." },
+                    "nutrient_enrichment": { "enrichment_score": 15, "analysis": "Values within normal baseline." },
+                    "chemical_pollution": { "pollution_score": 55, "analysis": "Moderate pH dip noted." }
+                },
+                "calculation_details": {
+                    "baselines": { "pH": 7.5, "DO": 8.0, "EC": 500, "Turbidity": 10, "Temp": 22, "ORP": 150 },
+                    "baseline_std_devs": { "pH": 0.5, "DO": 1.0, "EC": 50, "Turbidity": 5, "Temp": 2, "ORP": 25 }
+                },
+                "dashboard_metrics": {
+                    "raw_data": [
+                        { "timestamp": "2023-10-27T10:00:00+00:00", "pH": 7.6, "DO": 8.1, "EC": 510, "Turbidity": 12, "Temp": 22.5, "ORP": 155, "is_rain_affected_Turbidity": false },
+                        { "timestamp": "2023-10-27T11:00:00+00:00", "pH": 7.4, "DO": 7.9, "EC": 505, "Turbidity": 18, "Temp": 22.2, "ORP": 145, "is_rain_affected_Turbidity": true },
+                        { "timestamp": "2023-10-27T14:00:00+00:00", "pH": 7.0, "DO": 7.8, "EC": 490, "Turbidity": 11, "Temp": 22.0, "ORP": 140, "is_rain_affected_Turbidity": false },
+                        { "timestamp": "2023-10-27T15:00:00+00:00", "pH": 6.8, "DO": 7.7, "EC": 485, "Turbidity": 25, "Temp": 21.9, "ORP": 120, "is_rain_affected_Turbidity": false }
+                    ],
+                    "raw_data_zscores": [
+                        { "timestamp": "2023-10-27T10:00:00+00:00", "pH": 0.2, "DO": 0.1, "EC": 0.2, "Turbidity": 0.4, "Temp": 0.25, "ORP": 0.2 },
+                        { "timestamp": "2023-10-27T11:00:00+00:00", "pH": -0.2, "DO": -0.1, "EC": 0.1, "Turbidity": 1.6, "Temp": 0.1, "ORP": -0.2 },
+                        { "timestamp": "2023-10-27T14:00:00+00:00", "pH": -1.0, "DO": -0.2, "EC": -0.2, "Turbidity": 0.2, "Temp": 0.0, "ORP": -0.4 },
+                        { "timestamp": "2023-10-27T15:00:00+00:00", "pH": -1.4, "DO": -0.3, "EC": -0.3, "Turbidity": 3.0, "Temp": -0.05, "ORP": -1.2 }
+                    ],
+                    "moving_average": [
+                        { "timestamp": "2023-10-27T10:00:00+00:00", "pH": 7.6, "DO": 8.1, "EC": 510, "Turbidity": 12, "Temp": 22.5, "ORP": 155 },
+                        { "timestamp": "2023-10-27T11:00:00+00:00", "pH": 7.5, "DO": 8.0, "EC": 507.5, "Turbidity": 15, "Temp": 22.35, "ORP": 150 },
+                        { "timestamp": "2023-10-27T14:00:00+00:00", "pH": 7.33, "DO": 7.93, "EC": 501.67, "Turbidity": 13.67, "Temp": 22.23, "ORP": 146.67 },
+                        { "timestamp": "2023-10-27T15:00:00+00:00", "pH": 7.2, "DO": 7.87, "EC": 497.5, "Turbidity": 16.5, "Temp": 22.15, "ORP": 140 }
+                    ]
+                }
+            };
+            
+            // Process the sample data just like a file
+            processDashboardData(sampleData);
         }
+        // *** END MODIFIED FUNCTION ***
 
         // Process the dashboard data and initialize all components
         function processDashboardData(data) {
@@ -932,7 +966,7 @@
             createLegend('moving-avg-legend', sensors);
         }
 
-        // 6. Baseline Table
+        // *** MODIFIED FUNCTION: 6. Baseline Table ***
         function initializeBaselineTable() {
             const tbody = document.getElementById('baseline-tbody');
             tbody.innerHTML = '';
@@ -940,6 +974,11 @@
             const baselines = dashboardData.calculation_details.baselines;
             const stdDevs = dashboardData.calculation_details.baseline_std_devs;
             const sensors = ['pH', 'DO', 'EC', 'Turbidity', 'Temp', 'ORP'];
+
+            // --- NEW CODE: Get the latest Z-score data ---
+            const zscores = dashboardData.dashboard_metrics.raw_data_zscores;
+            const latestZScore = zscores.length > 0 ? zscores[zscores.length - 1] : null;
+            // --- END NEW CODE ---
             
             sensors.forEach(sensor => {
                 const row = document.createElement('tr');
@@ -959,17 +998,41 @@
                 stdDevCell.textContent = stdDevs[sensor].toFixed(4);
                 row.appendChild(stdDevCell);
                 
-                // Current status (simplified - in a real app you'd compare to baseline)
+                // --- MODIFIED BLOCK: Dynamic status based on latest Z-score ---
                 const statusCell = document.createElement('td');
                 const statusSpan = document.createElement('span');
-                statusSpan.className = 'info-badge badge-green';
-                statusSpan.textContent = 'Normal';
+                statusSpan.className = 'info-badge'; // Base class
+
+                if (latestZScore && latestZScore[sensor] !== undefined) {
+                    // Get the Z-score for this specific sensor
+                    const z = latestZScore[sensor]; 
+                    const absZ = Math.abs(z);
+
+                    // Apply logic based on standard deviation thresholds
+                    if (absZ >= 2) {
+                        statusSpan.classList.add('badge-red');
+                        statusSpan.textContent = 'Alert';
+                    } else if (absZ >= 1) {
+                        statusSpan.classList.add('badge-yellow');
+                        statusSpan.textContent = 'Warning';
+                    } else {
+                        statusSpan.classList.add('badge-green');
+                        statusSpan.textContent = 'Normal';
+                    }
+                } else {
+                    // Fallback if no data is available
+                    statusSpan.classList.add('badge-green'); 
+                    statusSpan.textContent = 'N/A';
+                }
+                
                 statusCell.appendChild(statusSpan);
                 row.appendChild(statusCell);
+                // --- END MODIFIED BLOCK ---
                 
                 tbody.appendChild(row);
             });
         }
+        // *** END MODIFIED FUNCTION ***
 
         // 7. Derived Metrics
         function initializeDerivedMetrics() {
@@ -1063,6 +1126,8 @@
             const missingPeriods = [];
             const threshold = 1.5 * 60 * 60 * 1000; // 1.5 hours in milliseconds
             
+            if (timestamps.length < 2) return [];
+
             for (let i = 0; i < timestamps.length - 1; i++) {
                 const currentTime = timestamps[i].getTime();
                 const nextTime = timestamps[i + 1].getTime();
@@ -1127,3 +1192,4 @@
     </script>
 </body>
 </html>
+```

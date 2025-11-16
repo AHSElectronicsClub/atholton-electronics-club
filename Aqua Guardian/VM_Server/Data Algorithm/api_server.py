@@ -31,7 +31,21 @@ WEATHER_API_URL = "https://api.openweathermap.org/data/3.0/onecall/timemachine"
 
 # --- Flask App Setup ---
 app = Flask(__name__)
-CORS(app)
+
+# === MODIFICATION ===
+# We must configure CORS to allow your *external* website to make requests.
+# Replace "https://www.your-existing-website.com" with your site's domain.
+# You can add "http://localhost:5500" or similar for your local testing.
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "https://atholton-electronics-club.vercel.app/",
+            "http://localhost" # Good for local testing
+            # You can add more domains here
+        ]
+    }
+})
+# === END MODIFICATION ===
 
 # --- Database Helper (from your analytics script) ---
 def get_db_connection():

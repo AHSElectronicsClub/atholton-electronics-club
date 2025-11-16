@@ -19,7 +19,6 @@ import pandas as pd
 import analytics
 
 # --- Configuration (Load from Environment Variables) ---
-# Database (same as your analytics script)
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_PORT = os.environ.get('DB_PORT', 5432)
 DB_NAME = os.environ.get('DB_NAME', 'water_data')
@@ -27,13 +26,11 @@ DB_USER = os.environ.get('DB_USER', 'postgres')
 DB_PASS = os.environ.get('DB_PASS', 'password')
 
 # Weather API (Using OpenWeatherMap OneCall API as an example)
-# !! Sign up at OpenWeatherMap to get your free key !!
 WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY')
 WEATHER_API_URL = "https://api.openweathermap.org/data/3.0/onecall/timemachine"
 
 # --- Flask App Setup ---
 app = Flask(__name__)
-# Enable CORS to allow your HTML file to make requests from a browser
 CORS(app)
 
 # --- Database Helper (from your analytics script) ---
@@ -107,7 +104,7 @@ def get_rain_flag(lat: float, lon: float, iso_timestamp: str) -> bool:
         return False # Default to 'false' on error
 
 # ===================================================================
-# ENDPOINT 1: FOR THE BUOY
+# ENDPOINT 1: FOR THE BUOY (MODIFIED FOR EFFICIENCY)
 # ===================================================================
 @app.route("/api/v1/data", methods=["POST"])
 def receive_data():
@@ -124,7 +121,6 @@ def receive_data():
         return jsonify({"error": "No JSON payload"}), 400
 
     # 2. AUTHENTICATION (Check for your API Key)
-    # The key is defined in your main.cpp
     received_key = request.headers.get('x-api-key')
     EXPECTED_API_KEY = "YOUR_SECRET_API_KEY" # This MUST match 'api_key_value' in main.cpp
     
@@ -141,18 +137,23 @@ def receive_data():
         device_id = payload.get('device_id')
         session_id = payload.get('session_id')
         water_leak = payload.get('water_leak', False)
-        # The 'sample_count' key from example_payload.json is noted but not needed here.
 
         if not all([lat, lon, samples, device_id, session_id]):
             print(f"ERROR: Missing critical data in payload: {payload}")
             return jsonify({"error": "Missing critical data"}), 400
+
+        # --- OPTIMIZATION START ---
+        # Call the weather API ONCE using the session_id timestamp
+        # (or the first sample's time)
+        print(f"Making ONE weather API call for session {session_id}...")
+        session_rain_flag = get_rain_flag(lat, lon, session_id)
+        # --- OPTIMIZATION END ---
 
         conn = get_db_connection()
         if not conn:
             print("ERROR: Database connection failed.")
             return jsonify({"error": "Database connection failed"}), 500
 
-        # This SQL query MUST match your database schema.
         insert_query = """
             INSERT INTO sensor_data (
                 buoy_id, session_id, "timestamp", 
@@ -171,9 +172,6 @@ def receive_data():
                 if not sample_time:
                     continue
 
-                # 4a. Call Weather API to get rain_flag
-                rain_flag = get_rain_flag(lat, lon, sample_time)
-
                 # 4b. Insert enriched data into DB
                 cursor.execute(insert_query, (
                     device_id,
@@ -188,7 +186,7 @@ def receive_data():
                     sample.get('turbidity'),
                     sample.get('DO'),
                     sample.get('ORP'),
-                    rain_flag  # The new, enriched data!
+                    session_rain_flag  # Use the SAME flag for all 12 samples
                 ))
                 inserted_rows += 1
         
@@ -197,7 +195,6 @@ def receive_data():
 
         print(f"SUCCESS: Inserted {inserted_rows} samples for session {session_id}")
         # 5. RESPOND
-        # The buoy expects "200 OK" on success (from modem.cpp)
         return jsonify({"status": "success", "inserted": inserted_rows}), 200
 
     except Exception as e:
@@ -284,9 +281,6 @@ def get_latest_buoy_data():
     """
     print("Request received for /api/buoys/latest")
     
-    # This SQL query uses DISTINCT ON to get only the *latest*
-    # record for each buoy, and joins it with the 'buoys'
-    # table to get the friendly_name and water_body_type.
     query = """
         SELECT DISTINCT ON (s.buoy_id)
             s.buoy_id,

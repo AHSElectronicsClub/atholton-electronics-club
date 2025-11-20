@@ -76,6 +76,7 @@ def get_db_connection() -> psycopg2.extensions.connection:
         )
         return conn
     except psycopg2.Error as e:
+        # This print is for server-side logs, not for the JSON output
         print(f"Error: Unable to connect to the database.")
         print(f"Please check your environment variables (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS).")
         print(f"psycopg2 error: {e}")
@@ -105,13 +106,15 @@ def fetch_sensor_data(conn: psycopg2.extensions.connection, buoy_id: str,
     Fetches sensor data for a given buoy and optional timeframe.
     If no timeframe is provided, fetches the entire dataset.
     
-    NOTE: "timestamp" is quoted because it's a reserved keyword in SQL.
+    NOTE: "timestamp" and "DO" are quoted because they are reserved keywords.
+    Other columns are returned as lowercase by PostgreSQL.
     """
     try:
         if start_time and end_time:
             # Use %s for parameter substitution in psycopg2
+            # We SELECT the unquoted columns (pH, EC, etc.)
             query = """
-                SELECT "timestamp", pH, DO, EC, Turbidity, Temp, ORP, rain_flag 
+                SELECT "timestamp", pH, "DO", EC, Turbidity, Temp, ORP, rain_flag 
                 FROM sensor_data 
                 WHERE buoy_id = %s AND "timestamp" BETWEEN %s AND %s
                 ORDER BY "timestamp" ASC
@@ -120,7 +123,7 @@ def fetch_sensor_data(conn: psycopg2.extensions.connection, buoy_id: str,
         else:
             # Fetches all data, needed for algae trend and baselines
             query = """
-                SELECT "timestamp", pH, DO, EC, Turbidity, Temp, ORP, rain_flag 
+                SELECT "timestamp", pH, "DO", EC, Turbidity, Temp, ORP, rain_flag 
                 FROM sensor_data 
                 WHERE buoy_id = %s 
                 ORDER BY "timestamp" ASC
@@ -135,6 +138,23 @@ def fetch_sensor_data(conn: psycopg2.extensions.connection, buoy_id: str,
 
         # Convert types (rain_flag is already bool from DB)
         df['timestamp'] = pd.to_datetime(df['timestamp'])
+        
+        # *** THIS IS THE BUG FIX ***
+        # Rename columns from lowercase (SQL default) to uppercase (what Python code expects)
+        # PostgreSQL returns unquoted columns as lowercase (e.g., 'ph', 'ec')
+        rename_map = {
+            'ph': 'pH',
+            'ec': 'EC',
+            'turbidity': 'Turbidity',
+            'temp': 'Temp',
+            'orp': 'ORP'
+        }
+        df.rename(columns=rename_map, inplace=True)
+
+        # Also handle the quoted "DO" column
+        if '"DO"' in df.columns:
+            df.rename(columns={'"DO"': 'DO'}, inplace=True)
+            
         return df
     
     except (psycopg2.Error, pd.errors.DatabaseError) as e:
@@ -159,7 +179,14 @@ def handle_rain_effects(df_raw: pd.DataFrame, water_body_type: str) -> pd.DataFr
         df = df.set_index('timestamp').sort_index()
 
     # 1. Find the end time of the *last* rain flag
-    df['last_rain_time'] = df.index.where(df['rain_flag']).ffill()
+    #
+    # *** THIS IS THE BUG FIX ***
+    # OLD LINE:
+    # df['last_rain_time'] = df.index.where(df['rain_flag']).ffill()
+    #
+    # NEW LINE:
+    # We must convert the index to a Series *first*, so .ffill() works.
+    df['last_rain_time'] = df.index.to_series().where(df['rain_flag']).ffill()
     
     # 2. Calculate time (in minutes) since the last rain event ended
     df['time_since_rain_min'] = (df.index - df['last_rain_time']).dt.total_seconds() / 60.0
@@ -284,6 +311,86 @@ def calculate_safety_light(current_data: pd.Series, ph_ideals: Tuple[float, floa
     
     return 'Gray' # If no data to assess
 
+# --- [NEW] Vectorized Safety Light Calculation ---
+
+def calculate_all_safety_lights(df: pd.DataFrame, ph_ideals: Tuple[float, float], 
+                                baselines: Dict, baseline_std_devs: Dict) -> pd.Series:
+    """
+    Determines the safety light (Red, Yellow, Green) for *every* data point in a DataFrame.
+    This is a vectorized version of calculate_safety_light.
+    Assumes 'df' has a DatetimeIndex.
+    """
+    # Initialize a DataFrame to hold the status for each sensor
+    # Default to 'Gray'
+    status_df = pd.DataFrame(index=df.index, dtype='object')
+    
+    # 1. Check pH
+    if 'pH' in df.columns:
+        ph_min, ph_max = ph_ideals
+        ph_buffer = (ph_max - ph_min) * 0.1 # 10% buffer for yellow
+        
+        # Define conditions for pH
+        cond_ph_red = (df['pH'] < (ph_min - ph_buffer)) | (df['pH'] > (ph_max + ph_buffer))
+        cond_ph_yellow = (df['pH'] < ph_min) | (df['pH'] > ph_max)
+        
+        # Apply conditions
+        status_df['pH_status'] = 'Green' # Default
+        status_df.loc[cond_ph_yellow, 'pH_status'] = 'Yellow'
+        status_df.loc[cond_ph_red, 'pH_status'] = 'Red'
+        status_df.loc[df['pH'].isna(), 'pH_status'] = 'Gray' # Handle NaNs
+    else:
+        status_df['pH_status'] = 'Gray'
+
+    # 2. Check other sensors
+    for sensor in ['DO', 'EC', 'Turbidity', 'Temp', 'ORP']:
+        status_col = f'{sensor}_status'
+        if sensor in df.columns and sensor in baselines:
+            mean = baselines.get(sensor)
+            std = baseline_std_devs.get(sensor)
+            
+            if std == 0 or pd.isna(std) or pd.isna(mean):
+                status_df[status_col] = 'Gray' # No baseline, no status
+                continue
+                
+            # Calculate Z-score for all rows
+            z_score = ((df[sensor] - mean) / std).abs()
+            
+            # Define conditions for Z-score
+            cond_z_red = (z_score > 2.0)
+            cond_z_yellow = (z_score > 1.0)
+            
+            # Apply conditions
+            status_df[status_col] = 'Green' # Default
+            status_df.loc[cond_z_yellow, status_col] = 'Yellow'
+            status_df.loc[cond_z_red, status_col] = 'Red'
+            status_df.loc[df[sensor].isna(), status_col] = 'Gray' # Handle NaNs
+        else:
+            status_df[status_col] = 'Gray' # Sensor not present
+
+    # 3. Determine overall status for each row
+    # We apply the logic: if any sensor is Red, row is Red.
+    # Else, if any sensor is Yellow, row is Yellow.
+    # Else, if any sensor is Green, row is Green.
+    # Else, row is Gray.
+    
+    sensor_status_cols = [col for col in status_df.columns if col.endswith('_status')]
+    
+    def determine_overall_status(row):
+        # Get all unique statuses for the row
+        statuses = set(row[sensor_status_cols])
+        
+        if 'Red' in statuses:
+            return 'Red'
+        if 'Yellow' in statuses:
+            return 'Yellow'
+        if 'Green' in statuses:
+            return 'Green'
+        return 'Gray'
+
+    # Apply the function row-wise
+    return status_df.apply(determine_overall_status, axis=1)
+
+
 # --- [NEW] Z-Score Calculation Function ---
 
 def calculate_zscores(df_raw: pd.DataFrame, baselines: Dict, 
@@ -346,7 +453,8 @@ def calculate_algae_risk(df_processed_full: pd.DataFrame) -> Dict:
     # --- Factor 2: pH Spikes (Max 30 points) ---
     # Intense algae photosynthesis consumes CO2, causing high pH spikes.
     if 'pH' in df_processed_full.columns:
-        ph_95th = df_processed_full['pH'].quantile(0.95, skipna=True) # 95th percentile
+        # *** BUG FIX: Removed skipna=True ***
+        ph_95th = df_processed_full['pH'].quantile(0.95) # 95th percentile
         if pd.notna(ph_95th):
             if ph_95th > 9.0:
                 score += 30
@@ -361,7 +469,8 @@ def calculate_algae_risk(df_processed_full: pd.DataFrame) -> Dict:
     if 'DO' in df_processed_full.columns:
         do_mean = df_processed_full['DO'].mean(skipna=True)
         do_std = df_processed_full['DO'].std(skipna=True)
-        do_95th = df_processed_full['DO'].quantile(0.95, skipna=True)
+        # *** BUG FIX: Removed skipna=True ***
+        do_95th = df_processed_full['DO'].quantile(0.95)
         
         # Check for large swings (high coefficient of variation)
         if pd.notna(do_mean) and pd.notna(do_std) and do_mean > 0:
@@ -418,7 +527,7 @@ def calculate_nutrient_indicator(df_processed_timeframe: pd.DataFrame,
     if pd.notna(do_mean) and do_baseline:
         if (do_mean / do_baseline) < 0.7: # 30% below baseline
             score += 40
-            analysis_parts.append("Low DO (30%+ below normal)..")
+            analysis_parts.append("Low DO (30%+ below normal).")
         elif (do_mean / do_baseline) < 0.85: # 15% below baseline
             score += 20
             analysis_parts.append("Depressed DO (15%+ below normal).")
@@ -505,7 +614,7 @@ def get_dashboard_data(buoy_id: str, timeframe_start: str, timeframe_end: str,
                        ph_ideals_tuple: Optional[Tuple[float, float]] = None) -> Dict[str, Any]:
     """
     Main function called by the API to fetch and calculate all dashboard metrics.
-   
+    [FOR THE "BUOY TAB"]
     """
     
     conn = None # Initialize conn to None
@@ -540,6 +649,21 @@ def get_dashboard_data(buoy_id: str, timeframe_start: str, timeframe_end: str,
         # 5. Calculate Baselines (from full dataset)
         baselines, baseline_std_devs = calculate_baselines(df_processed_full)
         
+        # [NEW] 5a. Calculate safety light status for all processed timeframe data
+        # We must use the *processed* data for this calculation
+        df_processed_timeframe_idx = df_processed_timeframe.set_index('timestamp')
+        
+        status_series = calculate_all_safety_lights(
+            df_processed_timeframe_idx, 
+            ph_ideals, 
+            baselines, 
+            baseline_std_devs
+        )
+        status_series.name = 'water_leak_status' # Using user's term
+        
+        # Convert Series to DataFrame with a 'timestamp' column for merging
+        df_status = status_series.reset_index()
+        
         # [NEW] 5b. Create a separate DataFrame for all rain-related flags
         # This will be merged with the raw data and z-score data
         flag_columns = ['timestamp', 'is_rain_affected_Turbidity', 'is_rain_affected_pH'] + \
@@ -553,6 +677,13 @@ def get_dashboard_data(buoy_id: str, timeframe_start: str, timeframe_end: str,
         
         # [MODIFIED] Merge raw data with the rain flags for plotting
         df_raw_with_flags = pd.merge(df_raw_timeframe, df_flags, on='timestamp', how='left')
+        
+        # [NEWLY MODIFIED] Now merge the status data as well
+        df_raw_with_flags = pd.merge(df_raw_with_flags, df_status, on='timestamp', how='left')
+        
+        # Fill any missing statuses with 'Gray' (e.g., if raw had data but processed didn't)
+        df_raw_with_flags['water_leak_status'].fillna('Gray', inplace=True)
+        
         raw_data_output = df_raw_with_flags.to_dict('records')
         
         # Standard Deviation on *processed* timeframe data
@@ -620,6 +751,57 @@ def get_dashboard_data(buoy_id: str, timeframe_start: str, timeframe_end: str,
         if conn:
             conn.close()
 
+# --- [NEW] Fast Function for Home Page ---
+
+def get_latest_buoy_status(buoy_id: str) -> Dict[str, Any]:
+    """
+    Fetches only the buoy info and the *single most recent* data point.
+    [FOR THE "HOME PAGE"]
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        
+        # 1. Get Buoy Info
+        buoy_info = get_buoy_info(conn, buoy_id)
+        
+        # 2. Get latest sensor reading
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            # Note: We must quote "DO"
+            cursor.execute("""
+                SELECT "timestamp", pH, "DO", EC, Turbidity, Temp, ORP, rain_flag 
+                FROM sensor_data
+                WHERE buoy_id = %s
+                ORDER BY "timestamp" DESC
+                LIMIT 1
+            """, (buoy_id,))
+            
+            latest_data = cursor.fetchone()
+            
+            if latest_data is None:
+                return {"error": f"No sensor data found for buoy {buoy_id}."}
+        
+        # 3. Combine and return
+        return {
+            "buoy_id": buoy_id,
+            "gps_coordinates": {
+                "latitude": buoy_info['gps_lat'],
+                "longitude": buoy_info['gps_lon']
+            },
+            "water_body_type": buoy_info['water_body_type'],
+            "latest_reading": dict(latest_data)
+        }
+
+    except Exception as e:
+        print(f"An error occurred in get_latest_buoy_status: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+    finally:
+        if conn:
+            conn.close()
+
+
 # --- Example Usage ---
 if __name__ == "__main__":
     # This block is for testing. Your API server would import and call 
@@ -628,14 +810,18 @@ if __name__ == "__main__":
     # NOTE: This test block assumes you have a running PostgreSQL/TimescaleDB
     # server and the credentials are set in your environment variables.
     
-    print("Connecting to TimescaleDB (check environment variables)...")
+    # All print statements in this block are commented out for clean output,
+    # except for the final JSON dump or the error JSON.
     
+    # print("Connecting to TimescaleDB (check environment variables)...")
+    
+    conn = None # Ensure conn is defined for 'finally' block
     try:
         conn = get_db_connection()
         conn.autocommit = True # Make DDL changes take effect immediately
         cursor = conn.cursor()
         
-        print("Creating dummy database tables...")
+        # print("Creating dummy database tables...")
         cursor.execute("DROP TABLE IF EXISTS sensor_data;")
         cursor.execute("DROP TABLE IF EXISTS buoys;")
         
@@ -651,12 +837,13 @@ if __name__ == "__main__":
         
         # Note: "timestamp" is quoted
         # rain_flag is now BOOLEAN
+        # *** FIX 2: Added quotes around "DO" ***
         cursor.execute("""
             CREATE TABLE sensor_data (
                 buoy_id TEXT NOT NULL,
                 "timestamp" TIMESTAMPTZ NOT NULL,
                 pH REAL,
-                DO REAL,
+                "DO" REAL,
                 EC REAL,
                 Turbidity REAL,
                 Temp REAL,
@@ -668,11 +855,11 @@ if __name__ == "__main__":
         """)
         
         # --- THIS IS THE KEY TIMESCALEDB COMMAND ---
-        print("Creating hypertable...")
+        # print("Creating hypertable...")
         cursor.execute("SELECT create_hypertable('sensor_data', 'timestamp');")
         
         # Insert dummy data
-        print("Inserting dummy data...")
+        # print("Inserting dummy data...")
         cursor.execute("INSERT INTO buoys (buoy_id, water_body_type, gps_lat, gps_lon) VALUES (%s, %s, %s, %s);",
                        ('B-101', 'Lake', 42.123, -71.456))
         
@@ -695,7 +882,14 @@ if __name__ == "__main__":
                 turb_val = 50 # Turbidity spike
                 ec_val = 100  # EC drop
                 ph_val = 7.0 # pH drop
-                
+            
+            # Add a pollution event
+            if i == 40: # At hour 40
+                ph_val = 4.5 # Acid spill
+                orp_val = -150 # Sewage
+            else:
+                orp_val = 200 + np.random.randn()*10
+
             data_to_insert.append(
                 ('B-101', ts.isoformat(), 
                  ph_val + np.random.randn()*0.1, 
@@ -703,25 +897,32 @@ if __name__ == "__main__":
                  ec_val + np.random.randn()*5, 
                  turb_val + np.random.randn()*1, 
                  15.0 + np.random.randn()*0.5, 
-                 200 + np.random.randn()*10, 
+                 orp_val, 
                  is_rain)
             )
             
         # Use psycopg2.extras.execute_batch for efficient insertion
+        # *** FIX 3: Added quotes around "DO" ***
         psycopg2.extras.execute_batch(
             cursor,
             """
-            INSERT INTO sensor_data (buoy_id, "timestamp", pH, DO, EC, Turbidity, Temp, ORP, rain_flag) 
+            INSERT INTO sensor_data (buoy_id, "timestamp", pH, "DO", EC, Turbidity, Temp, ORP, rain_flag) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             data_to_insert
         )
         
         conn.commit() # Commit the inserts
-        print("Dummy data inserted.")
+        # print("Dummy data inserted.")
+
+        # --- [NEW] Test the "Home Page" function ---
+        # print("\n--- Calling get_latest_buoy_status() (for Home Page) ---")
+        latest_status = get_latest_buoy_status('B-101')
+        import json
+        # print(json.dumps(latest_status, indent=2, default=str))
         
         # --- Run the main function ---
-        print("\n--- Calling get_dashboard_data() ---")
+        # print("\n--- Calling get_dashboard_data() (for Buoy Tab) ---")
         
         start = "2025-01-01T00:00:00"
         end = "2025-01-03T23:59:59"
@@ -731,19 +932,32 @@ if __name__ == "__main__":
         # No need to pass connection, main function creates its own
         dashboard_data = get_dashboard_data('B-101', start, end, ph_ideals_tuple=ideals)
         
-        import json
+        # This is the only print statement that should be active.
         print(json.dumps(dashboard_data, indent=2, default=str))
 
-        print("\n--- Z-Score Example (from timeframe 19-24) ---")
-        # Show the Z-scores around the rain event
-        zscores_output = dashboard_data.get('dashboard_metrics', {}).get('raw_data_zscores', [])
-        for row in zscores_output[19:25]: # Print hours 19 through 24
-            print(f"Time: {row['timestamp']}, Turbidity Z-Score: {row.get('Turbidity'):.2f}, Rain Flag: {row.get('is_rain_affected_Turbidity')}")
+        # --- All debug prints below this are commented out ---
+        # print("\n--- Z-Score Example (from timeframe 19-24) ---")
+        # zscores_output = dashboard_data.get('dashboard_metrics', {}).get('raw_data_zscores', [])
+        # for row in zscores_output[19:25]: # Print hours 19 through 24
+        #     print(f"Time: {row['timestamp']}, Turbidity Z-Score: {row.get('Turbidity'):.2f}, Rain Flag: {row.get('is_rain_affected_Turbidity')}")
+            
+        # print("\n--- [NEW] Water Leak Status Example (around hour 40) ---")
+        # raw_data_output = dashboard_data.get('dashboard_metrics', {}).get('raw_data', [])
+        # for row in raw_data_output[38:43]: # Print hours 38 through 42
+        #     print(f"Time: {row['timestamp']}, pH: {row.get('pH'):.2f}, ORP: {row.get('ORP'):.2f}, Status: {row.get('water_leak_status')}")
+
             
     except psycopg2.Error as e:
-        print(f"\n--- TEST FAILED ---")
-        print(f"Could not run test: {e}")
-        print("Please ensure PostgreSQL/TimescaleDB is running and environment variables are set.")
+        # --- ALL ERROR PRINTS ARE COMMENTED OUT ---
+        # print(f"\n--- TEST FAILED ---")
+        # print(f"Could not run test: {e}")
+        # print("Please ensure PostgreSQL/TimescaleDB is running and environment variables are set.")
+        
+        # Instead of printing the error, we'll print an empty JSON
+        # so the output file is still valid, but shows an error.
+        import json
+        print(json.dumps({"error": "Database connection failed", "details": str(e)}, indent=2))
+        
     finally:
         if 'conn' in locals() and conn:
             conn.close()

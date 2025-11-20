@@ -10,7 +10,7 @@
 #define CONFIG_H
 
 // --- Device Settings ---
-#define DEVICE_ID "ESP32E_01"         // Unique ID for this device
+#define DEVICE_ID "AG-01"         // Unique ID for this device
 #define DEEP_SLEEP_DURATION_SEC 600   // Sleep for 10 minutes
 #define SENSOR_READ_INTERVAL_MS 10000 // Sample sensors every 10 seconds
 #define MAX_SAMPLES_PER_SESSION 12    // Max sensor readings per sleep cycle (12 * 10s = 120s = 2 min)

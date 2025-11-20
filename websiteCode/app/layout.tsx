@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '../components/Header'; // Adjusted path
+import Footer from '../components/Footer'; // Adjusted path
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Atholton Electronics Club',
@@ -15,21 +18,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      {/* ADD YOUR CLASSES HERE:
-        - font-sans: Applies your default 'Inter' font (from your config)
-        - bg-gray-light: Applies your custom '#F6F7F9' background color
-        - text-forest: Applies your default text color (you can change this)
+      {/*
+        --- THIS IS THE FIX ---
+        I've added your 'bg-page-gradient' and 'min-h-screen' here
+        to apply it to every page on the site.
       */}
-      <body className="min-h-screen flex flex-col font-sans bg-gray-light text-forest">
-        
-        <Header /> 
-        
-        <main className="flex-grow">
+      <body className={`${inter.className} bg-page-gradient min-h-screen`}>
+        <Header />
+        <main>
           {children}
         </main>
-        
         <Footer />
-        
       </body>
     </html>
   );

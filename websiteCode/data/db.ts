@@ -58,15 +58,17 @@ export const TEAM_DATA: TeamMember[] = [
   { id: 1, name: 'Austen Shaheen', title: 'President / Electrical Team Lead', imageUrl: '/images/austen.jpg' },
   { id: 2, name: 'Anwar Khan', title: 'President / Mechanical Team Lead', imageUrl: '/images/anwar.jpg' },
   { id: 3, name: 'Shalin Vakil', title: 'Vice President / Software Team Lead', imageUrl: '/images/shalin.jpg' },
-  { id: 4, name: 'Simar Arri', title: 'Vice President / Electrical Team Lead', imageUrl: '/images/simar.jpg' },
-  { id: 5, name: 'Ayaan Kalra', title: 'Software Team Lead / Outreach', imageUrl: '/images/ayaan.jpg' },
-  { id: 6, name: 'Timothy Ward', title: 'Mechanical Team Lead', imageUrl: '/images/timothy.jpg' },
+  { id: 4, name: 'Ayaan Kalra', title: 'Software Team Lead / Outreach', imageUrl: '/images/ayaan.jpg' },
+  { id: 5, name: 'Timothy Ward', title: 'Mechanical Team Lead', imageUrl: '/images/timothy.jpg' },
 ];
 
+// --- THIS IS THE FIX ---
+// I have added the "Sierra Club" link back to your resources list.
 export const RESOURCES_DATA = [
   { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects...', link: 'https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
   { id: 101, title: 'DFRobot', description: 'Our primary parts supplier.', link: 'https://www.dfrobot.com/', type: 'supplier' },
-  //{ id: 2, title: 'Soldering 101 Cheatsheet', description: 'A printable 1-page PDF guide.', link: '#', type: 'cheatsheet' }
+  { id: 2, title: 'Sierra Club (Maryland)', description: 'Local environmental advocacy and partner organization.', link: 'https://www.sierraclub.org/maryland', type: 'link' },
+  //{ id: 3, title: 'Soldering 101 Cheatsheet', description: 'A printable 1-page PDF guide.', link: '#', type: 'cheatsheet' }
 ];
 
 /**

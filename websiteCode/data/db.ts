@@ -31,7 +31,7 @@ We believe that building a high-impact, open-source technology is a direct way t
       'Onboard Edge Compute Module (optional for preprocessing)'
     ],
     images: [
-      '/images/aqua-prototype.jpg',
+      '/images/AquaGuardian.png',
       '/images/sensor-array.jpg',
       '/images/lake-deployment.jpg'
     ],

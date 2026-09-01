@@ -144,7 +144,7 @@ export default function DashboardPage() {
     
     try {
       // LIVE RENDER API CALL
-      const response = await fetch('https://aqua-guardian-api.onrender.com/api/get-dashboard-data', {
+      const response = await fetch('https://aqua-guardian-cloud-test.onrender.com/api/get-dashboard-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -17,7 +17,7 @@
 
 // --- Global Variable Definitions ---
 // (Moved from config.h to fix "multiple definition" linker errors)
-const char *server = "aqua-guardian-api.onrender.com";
+const char SERVER[] = "aqua-guardian-cloud-test.onrender.com";
 const char *resource = "/api/v1/data";
 const int port = 443; // Use 443 for HTTPS, 80 for HTTP
 const char *api_key_header = "x-api-key";

@@ -16,8 +16,8 @@ interface BuoyData {
   battery_v: number | null;
 }
 
+// Ensure this uses a named export
 export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
-  // In-house battery threshold setting
   const BATTERY_THRESHOLD = 3.5; 
   const isBatteryLow = data.battery_v !== null && data.battery_v < BATTERY_THRESHOLD;
   const batteryColor = isBatteryLow ? 'text-red-500 bg-red-100' : 'text-emerald-500 bg-emerald-100';
@@ -31,7 +31,6 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
           <p className="text-sm text-gray-500">ID: {data.buoy_id} • {data.water_body_type}</p>
         </div>
         
-        {/* Battery & Status Indicators */}
         <div className="flex items-center gap-3">
           {data.water_leak && (
             <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-semibold uppercase tracking-wider">
@@ -64,11 +63,10 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
   );
 };
 
-// Reusable micro-component for sleek metric rendering
 const MetricItem = ({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string, color: string }) => (
   <div className="flex flex-col p-3 rounded-xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
     <div className={`flex items-center gap-2 mb-2 ${color} opacity-80`}>
-      {React.cloneElement(icon as React.ReactElement, { size: 18 })}
+      {React.isValidElement(icon) ? React.cloneElement(icon, { size: 18 } as { size?: number }) : icon}
       <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{label}</span>
     </div>
     <div className="text-xl font-semibold text-gray-800">{value}</div>

@@ -7,12 +7,12 @@ interface BuoyData {
   water_body_type: string;
   timestamp: string;
   water_leak: boolean;
-  pH: number | null;
-  Temp: number | null;
-  EC: number | null;
-  Turbidity: number | null;
+  ph: number | null;
+  temp: number | null;
+  ec: number | null;
+  turbidity: number | null;
   DO: number | null;
-  ORP: number | null;
+  orp: number | null;
   battery_v: number | null;
 }
 
@@ -22,7 +22,6 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
   const isBatteryLow = batteryVal !== null && batteryVal < BATTERY_THRESHOLD;
   const batteryColor = isBatteryLow ? 'text-red-500 bg-red-100' : 'text-emerald-500 bg-emerald-100';
 
-  // Safe formatter helper
   const formatVal = (val: number | null, decimals: number = 2, suffix: string = '') => {
     if (val === null || val === undefined || isNaN(val)) return 'N/A';
     return `${val.toFixed(decimals)}${suffix}`;
@@ -30,7 +29,6 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-w-2xl w-full">
-      {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">{data.friendly_name || 'Buoy Unit'}</h2>
@@ -52,14 +50,13 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
         </div>
       </div>
 
-      {/* Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <MetricItem icon={<Thermometer />} label="Temp" value={formatVal(data.Temp, 1, '°C')} color="text-orange-500" />
-        <MetricItem icon={<Droplet />} label="pH Level" value={formatVal(data.pH, 2)} color="text-blue-500" />
+        <MetricItem icon={<Thermometer />} label="Temp" value={formatVal(data.temp, 1, '°C')} color="text-orange-500" />
+        <MetricItem icon={<Droplet />} label="pH Level" value={formatVal(data.ph, 2)} color="text-blue-500" />
         <MetricItem icon={<Activity />} label="Dis. Oxygen" value={formatVal(data.DO, 1, ' mg/L')} color="text-cyan-500" />
-        <MetricItem icon={<Zap />} label="Conductivity" value={formatVal(data.EC, 0, ' µS/cm')} color="text-purple-500" />
-        <MetricItem icon={<Activity />} label="Turbidity" value={formatVal(data.Turbidity, 1, ' NTU')} color="text-amber-500" />
-        <MetricItem icon={<Activity />} label="ORP" value={formatVal(data.ORP, 0, ' mV')} color="text-indigo-500" />
+        <MetricItem icon={<Zap />} label="Conductivity" value={formatVal(data.ec, 0, ' µS/cm')} color="text-purple-500" />
+        <MetricItem icon={<Activity />} label="Turbidity" value={formatVal(data.turbidity, 1, ' NTU')} color="text-amber-500" />
+        <MetricItem icon={<Activity />} label="ORP" value={formatVal(data.orp, 0, ' mV')} color="text-indigo-500" />
       </div>
 
       <div className="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-400 text-right">

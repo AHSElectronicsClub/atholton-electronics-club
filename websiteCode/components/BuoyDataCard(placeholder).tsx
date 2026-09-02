@@ -7,28 +7,34 @@ interface BuoyData {
   water_body_type: string;
   timestamp: string;
   water_leak: boolean;
-  pH: number;
-  Temp: number;
-  EC: number;
-  Turbidity: number;
-  DO: number;
-  ORP: number;
+  pH: number | null;
+  Temp: number | null;
+  EC: number | null;
+  Turbidity: number | null;
+  DO: number | null;
+  ORP: number | null;
   battery_v: number | null;
 }
 
-// Ensure this uses a named export
 export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
   const BATTERY_THRESHOLD = 3.5; 
-  const isBatteryLow = data.battery_v !== null && data.battery_v < BATTERY_THRESHOLD;
+  const batteryVal = typeof data.battery_v === 'number' ? data.battery_v : null;
+  const isBatteryLow = batteryVal !== null && batteryVal < BATTERY_THRESHOLD;
   const batteryColor = isBatteryLow ? 'text-red-500 bg-red-100' : 'text-emerald-500 bg-emerald-100';
+
+  // Safe formatter helper
+  const formatVal = (val: number | null, decimals: number = 2, suffix: string = '') => {
+    if (val === null || val === undefined || isNaN(val)) return 'N/A';
+    return `${val.toFixed(decimals)}${suffix}`;
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-w-2xl w-full">
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">{data.friendly_name}</h2>
-          <p className="text-sm text-gray-500">ID: {data.buoy_id} • {data.water_body_type}</p>
+          <h2 className="text-2xl font-bold text-gray-800">{data.friendly_name || 'Buoy Unit'}</h2>
+          <p className="text-sm text-gray-500">ID: {data.buoy_id || 'N/A'} • {data.water_body_type || 'Water Body'}</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -37,10 +43,10 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
               <AlertTriangle size={14} /> Leak
             </div>
           )}
-          {data.battery_v !== null && (
+          {batteryVal !== null && (
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${batteryColor}`}>
               <Battery size={16} />
-              {data.battery_v.toFixed(2)}V
+              {batteryVal.toFixed(2)}V
             </div>
           )}
         </div>
@@ -48,16 +54,16 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <MetricItem icon={<Thermometer />} label="Temp" value={`${data.Temp}°C`} color="text-orange-500" />
-        <MetricItem icon={<Droplet />} label="pH Level" value={data.pH.toFixed(2)} color="text-blue-500" />
-        <MetricItem icon={<Activity />} label="Dis. Oxygen" value={`${data.DO} mg/L`} color="text-cyan-500" />
-        <MetricItem icon={<Zap />} label="Conductivity" value={`${data.EC} µS/cm`} color="text-purple-500" />
-        <MetricItem icon={<Activity />} label="Turbidity" value={`${data.Turbidity} NTU`} color="text-amber-500" />
-        <MetricItem icon={<Activity />} label="ORP" value={`${data.ORP} mV`} color="text-indigo-500" />
+        <MetricItem icon={<Thermometer />} label="Temp" value={formatVal(data.Temp, 1, '°C')} color="text-orange-500" />
+        <MetricItem icon={<Droplet />} label="pH Level" value={formatVal(data.pH, 2)} color="text-blue-500" />
+        <MetricItem icon={<Activity />} label="Dis. Oxygen" value={formatVal(data.DO, 1, ' mg/L')} color="text-cyan-500" />
+        <MetricItem icon={<Zap />} label="Conductivity" value={formatVal(data.EC, 0, ' µS/cm')} color="text-purple-500" />
+        <MetricItem icon={<Activity />} label="Turbidity" value={formatVal(data.Turbidity, 1, ' NTU')} color="text-amber-500" />
+        <MetricItem icon={<Activity />} label="ORP" value={formatVal(data.ORP, 0, ' mV')} color="text-indigo-500" />
       </div>
 
       <div className="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-400 text-right">
-        Last updated: {new Date(data.timestamp).toLocaleString()}
+        Last updated: {data.timestamp ? new Date(data.timestamp).toLocaleString() : 'N/A'}
       </div>
     </div>
   );

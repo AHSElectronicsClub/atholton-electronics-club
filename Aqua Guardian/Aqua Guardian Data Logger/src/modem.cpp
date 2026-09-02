@@ -29,6 +29,13 @@ TinyGsmClient client(modem);
 bool modem_init() {
     Serial.println("Initializing modem...");
 
+    // Wake the modem via hardware pin
+    pinMode(PIN_MODEM_PWR, OUTPUT);
+    digitalWrite(PIN_MODEM_PWR, LOW);
+    delay(1000); 
+    digitalWrite(PIN_MODEM_PWR, HIGH);
+    delay(15000); // Give the modem 15 seconds to boot up. Prolong if not enough.
+
     // Set modem AT command port baud rate
     SerialAT.begin(SERIAL_AT_BAUD, SERIAL_8N1, PIN_MODEM_RX, PIN_MODEM_TX);
     
@@ -175,6 +182,11 @@ bool modem_connect_network() {
 void modem_disconnect() {
     modem.gprsDisconnect();
     Serial.println("GPRS Disconnected.");
+
+    // Safely detach and power down the cellular module
+    modem.poweroff();
+    Serial.println("Modem powered down.");
+    delay(5000);
 }
 
 /**

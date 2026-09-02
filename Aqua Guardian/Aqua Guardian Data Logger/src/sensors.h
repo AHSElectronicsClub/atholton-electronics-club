@@ -24,6 +24,7 @@ struct SensorSample {
     float turb = -1.0;
     float in_do = -1.0; // "in_do" to avoid "do" keyword
     float orp = -1.0;
+    float battery_v = 0.0;
 };
 
 /**

@@ -45,6 +45,7 @@ bool sensors_init() {
     pinMode(PIN_EC, INPUT);
     pinMode(PIN_TURBIDITY, INPUT);
     pinMode(PIN_ORP, INPUT);
+    pinMode(PIN_BATTERY, INPUT);
     
     // --- FIX: Initialize the 12V Water Leak Sensor Pins ---
     pinMode(PIN_WATER_LEAK, INPUT);        // This is the signal read pin
@@ -93,6 +94,11 @@ void sensors_get_initial_data(SensorReadings& session_data) {
     } else {
         Serial.println("No leak detected.");
     }
+    
+    // NEW: Read Battery Voltage (Assumes 100k/100k voltage divider)
+    int bat_analog = analogRead(PIN_BATTERY);
+    float pin_voltage = bat_analog * (DEFAULT_VREF / 4095.0) / 1000.0;
+    sample.battery_v = pin_voltage * 2.0; 
 
     session_data.sample_count = 0;
 }

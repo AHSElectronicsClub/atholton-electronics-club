@@ -47,8 +47,8 @@ String storage_save_session(SensorReadings& readings) {
 
     // Create JSON document
     JsonDocument doc;
-    doc["session_id"] = readings.session_id;
     doc["device_id"] = readings.device_id;
+    doc["session_id"] = readings.session_id;
     doc["water_leak"] = readings.water_leak;
 
     JsonObject gps = doc["gps"].to<JsonObject>();
@@ -65,6 +65,7 @@ String storage_save_session(SensorReadings& readings) {
         s["turbidity"] = readings.samples[i].turb;
         s["DO"] = readings.samples[i].in_do;
         s["ORP"] = readings.samples[i].orp;
+        s["battery_v"] = readings.samples[i].battery_v;
     }
 
     // Serialize JSON to file

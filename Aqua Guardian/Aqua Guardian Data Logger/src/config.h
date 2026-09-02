@@ -36,6 +36,7 @@ extern const char *gprsPass;
 #define SERIAL_AT_BAUD 115200 // Baud rate for A7670E
 #define PIN_MODEM_TX 17       // Shield TX -> A7670E RX
 #define PIN_MODEM_RX 16       // Shield RX -> A7670E TX
+#define PIN_MODEM_PWR 14      // NEW: Digital pin to cycle modem power  
 
 // -- Analog Sensor Pins (Verified) --
 #define PIN_PH 36         // Shield A0 / GPIO 36 (ADC1_CH0)
@@ -43,6 +44,9 @@ extern const char *gprsPass;
 #define PIN_EC 34         // Shield A2 / GPIO 34 (ADC1_CH6)
 #define PIN_TURBIDITY 35  // Shield A3 / GPIO 35 (ADC1_CH7)
 #define PIN_ORP 15        // Shield A4 / GPIO 15 (ADC2_CH3) - *** FIX ***
+
+// -- Battery Monitoring --
+#define PIN_BATTERY 33 // Shield A5 / GPIO 33
 
 // -- 12V Water Leak Sensor Pins --
 // We need two pins for this sensor as per our circuit

@@ -93,13 +93,8 @@ void sensors_get_initial_data(SensorReadings& session_data) {
         Serial.println("WARNING: Water leak detected!");
     } else {
         Serial.println("No leak detected.");
-    }
+    }   
     
-    // NEW: Read Battery Voltage (Assumes 100k/100k voltage divider)
-    int bat_analog = analogRead(PIN_BATTERY);
-    float pin_voltage = bat_analog * (DEFAULT_VREF / 4095.0) / 1000.0;
-    sample.battery_v = pin_voltage * 2.0; 
-
     session_data.sample_count = 0;
 }
 
@@ -146,7 +141,12 @@ void sensors_read_all(SensorSample& sample) {
     float orp_voltage = orp_analog * (DEFAULT_VREF / 4095.0);
     sample.orp = (orp_voltage * 1.0) + ORP_OFFSET; // EXAMPLE CALCULATION
 
+    // Read Battery Voltage (Assumes 100k/100k voltage divider)
+    int bat_analog = analogRead(PIN_BATTERY);
+    float pin_voltage = bat_analog * (DEFAULT_VREF / 4095.0) / 1000.0;
+    sample.battery_v = pin_voltage * 2.0; 
+
     // Print values
-    Serial.printf(" Temp: %.2fC, pH: %.2f, DO: %.2f, EC: %.2f, Turb: %.2f, ORP: %.2f\n",
-        sample.temp, sample.ph, sample.in_do, sample.ec, sample.turb, sample.orp);
+    Serial.printf(" Temp: %.2fC, pH: %.2f, DO: %.2f, EC: %.2f, Turb: %.2f, ORP: %.2f, Bat: %.2fV\n",
+        sample.temp, sample.ph, sample.in_do, sample.ec, sample.turb, sample.orp, sample.battery_v);
 }

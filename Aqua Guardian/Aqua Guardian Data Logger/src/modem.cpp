@@ -9,7 +9,9 @@
 
 // --- HEADER INCLUDES ---
 // config.h must be the first file included in every .cpp
-#include "config.h" 
+#include "config.h"
+
+#define TINY_GSM_MODEM_SIM7600
 
 // This include order is critical.
 #include <TinyGsm.h>

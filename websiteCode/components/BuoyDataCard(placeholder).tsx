@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Droplet, Thermometer, Zap, Battery, AlertTriangle } from 'lucide-react';
+import { Activity, Droplet, Thermometer, Zap, Battery, AlertTriangle, Navigation } from 'lucide-react';
 
 interface BuoyData {
   buoy_id: string;
@@ -14,6 +14,8 @@ interface BuoyData {
   DO: number | null;
   orp: number | null;
   battery_v: number | null;
+  gps_lat: number | null;
+  gps_lon: number | null;
 }
 
 export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
@@ -27,9 +29,14 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
     return `${val.toFixed(decimals)}${suffix}`;
   };
 
+  const formatGps = (lat: number | null, lon: number | null) => {
+    if (lat === null || lon === null || isNaN(lat) || isNaN(lon)) return 'N/A';
+    return `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-w-2xl w-full">
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">{data.friendly_name || 'Buoy Unit'}</h2>
           <p className="text-sm text-gray-500">ID: {data.buoy_id || 'N/A'} • {data.water_body_type || 'Water Body'}</p>
@@ -48,6 +55,13 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* GPS Location Bar */}
+      <div className="flex items-center gap-2 mb-6 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-600">
+        <Navigation size={14} className="text-blue-500" />
+        <span className="font-semibold text-gray-700">GPS Location:</span>
+        <span>{formatGps(data.gps_lat, data.gps_lon)}</span>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

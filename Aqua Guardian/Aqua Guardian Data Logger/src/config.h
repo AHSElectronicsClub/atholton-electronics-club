@@ -54,7 +54,7 @@ extern const char *gprsPass;
 #define PIN_WATER_LEAK 26 // Shield D3 / GPIO 26 (Reads sensor signal) - *** FIX ***
 
 // -- DS18B20 Temp Sensor (OneWire Bus) --
-#define PIN_ONE_WIRE_BUS 27 // Shield D14 / GPIO 27 (Valid pin)
+#define PIN_ONE_WIRE_BUS 13 // Shield D7 / GPIO 13
 
 // -- Other Settings --
 #define DEFAULT_VREF 3300.0 // 3.3V VREF in mV

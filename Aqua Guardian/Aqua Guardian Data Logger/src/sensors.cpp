@@ -47,10 +47,10 @@ bool sensors_init() {
     pinMode(PIN_ORP, INPUT);
     pinMode(PIN_BATTERY, INPUT);
     
-    // --- FIX: Initialize the 12V Water Leak Sensor Pins ---
-    pinMode(PIN_WATER_LEAK, INPUT);        // This is the signal read pin
-    pinMode(PIN_LEAK_POWER, OUTPUT);       // This is the power control pin
-    digitalWrite(PIN_LEAK_POWER, LOW); // Ensure sensor is OFF by default
+    // --- Disconnected: 12V Water Leak Sensor Pins ---
+    // pinMode(PIN_WATER_LEAK, INPUT);        
+    // pinMode(PIN_LEAK_POWER, OUTPUT);       
+    // digitalWrite(PIN_LEAK_POWER, LOW); 
     // ----------------------------------------------------
 
     Serial.println("Sensors initialized.");

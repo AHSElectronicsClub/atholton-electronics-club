@@ -54,7 +54,7 @@ extern const char *gprsPass;
 #define PIN_WATER_LEAK 26 // Shield D3 / GPIO 26 (Reads sensor signal) - *** FIX ***
 
 // -- DS18B20 Temp Sensor (OneWire Bus) --
-#define PIN_ONE_WIRE_BUS 13 // Shield D7 / GPIO 13
+#define PIN_ONE_WIRE_BUS 5 // Shield D7 / GPIO 0
 
 // -- Other Settings --
 #define DEFAULT_VREF 3300.0 // 3.3V VREF in mV
@@ -65,4 +65,4 @@ extern const char *gprsPass;
 // -- Storage (LittleFS)
 #define MAX_SESSIONS_STORED 100 // Max # of JSON files to keep
 
-#endif // CONFIG_H
+#endif // CONFIG_H;

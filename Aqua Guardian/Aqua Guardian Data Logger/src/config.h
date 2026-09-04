@@ -46,7 +46,7 @@ extern const char *gprsPass;
 #define PIN_ORP 15        // Shield A4 / GPIO 15 (ADC2_CH3) - *** FIX ***
 
 // -- Battery Monitoring --
-#define PIN_BATTERY 33 // Shield A5 / GPIO 33
+#define PIN_BATTERY 25 // Shield D2
 
 // -- 12V Water Leak Sensor Pins --
 // We need two pins for this sensor as per our circuit

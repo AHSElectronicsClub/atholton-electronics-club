@@ -76,24 +76,19 @@ void sensors_get_initial_data(SensorReadings& session_data) {
         Serial.println("No GPS fix.");
     }
 
-    // --- FIX: Power on and read the 12V water leak sensor ---
-    Serial.println("Checking for water leak...");
-    digitalWrite(PIN_LEAK_POWER, HIGH); // Turn ON the 12V MOSFET switch
-    delay(100);                         // Wait 100ms for the sensor to stabilize
+    // --- Disconnected: Power on and read the 12V water leak sensor ---
+    // Serial.println("Checking for water leak...");
+    // digitalWrite(PIN_LEAK_POWER, HIGH); 
+    // delay(100);                         
+    // session_data.water_leak = (digitalRead(PIN_WATER_LEAK) == HIGH); 
+    // digitalWrite(PIN_LEAK_POWER, LOW);  
     
-    // Read the sensor's signal pin
-    // NOTE: This logic assumes a HIGH signal means a leak.
-    // You may need to change this to LOW depending on your sensor's relay wiring.
-    session_data.water_leak = (digitalRead(PIN_WATER_LEAK) == HIGH); 
-    
-    digitalWrite(PIN_LEAK_POWER, LOW);  // Turn OFF the 12V MOSFET switch
-    // ------------------------------------------------------
-    
-    if(session_data.water_leak) {
-        Serial.println("WARNING: Water leak detected!");
-    } else {
-        Serial.println("No leak detected.");
-    }   
+    // if(session_data.water_leak) {
+    //     Serial.println("WARNING: Water leak detected!");
+    // } else {
+    //     Serial.println("No leak detected.");
+    // }   
+    // ------------------------------------------------------   
     
     session_data.sample_count = 0;
 }

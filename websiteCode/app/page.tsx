@@ -7,6 +7,7 @@ import Modal from '../components/Modal';
 import ProjectModalContent from '../components/ProjectModalContent';
 import { PROJECTS_DATA, EVENTS_DATA } from '../data/db';
 import { BuoyDataCard } from '@/components/BuoyDataCard(placeholder)';
+import { adaptSupabaseRowToBuoyData } from '@/utils/adapters';
 
 export default function HomePage() {
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
@@ -18,7 +19,9 @@ export default function HomePage() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setBuoyData(data[0]); // Grab the latest entry for AG-01
+          // Adapt the raw Supabase row into flat properties for BuoyDataCard
+          const adaptedRow = adaptSupabaseRowToBuoyData(data[0]);
+          setBuoyData(adaptedRow);
         }
       })
       .catch(err => console.error("Failed to fetch buoy telemetry:", err));
@@ -37,11 +40,11 @@ export default function HomePage() {
       </PageContainer>
       
       {/* Aqua Guardian Panel */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-12 flex justify-center">
         {buoyData ? (
           <BuoyDataCard data={buoyData} />
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center text-gray-400">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center text-gray-400 w-full max-w-2xl">
             Loading live buoy telemetry...
           </div>
         )}

@@ -37,7 +37,7 @@ bool modem_init() {
         delay(1000); 
         digitalWrite(PIN_MODEM_PWR, LOW);
         pinMode(PIN_MODEM_PWR, INPUT); 
-        delay(10000);
+        delay(1500);
     } else {
         Serial.println("Modem is already awake. Skipping power toggle.");
     }

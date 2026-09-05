@@ -123,8 +123,12 @@ export default function DashboardPage() {
   const getBaselineRows = () => {
     if (!dashboardData) return null;
     const { baselines, baseline_std_devs } = dashboardData.calculation_details;
-    const sensors = ['pH', 'DO', 'EC', 'Turbidity', 'Temp', 'air_temp', 'humidity', 'ORP'];
     const lastData = dashboardData.dashboard_metrics.raw_data[dashboardData.dashboard_metrics.raw_data.length - 1];
+
+    // Filter out air_temp and humidity so they don't appear in the baseline table
+    const sensors = Object.keys(baselines).filter(
+      sensor => sensor !== 'air_temp' && sensor !== 'humidity'
+    );
 
     return sensors.map(sensor => {
         const base = baselines[sensor];
@@ -132,7 +136,7 @@ export default function DashboardPage() {
         const curr = lastData[sensor];
         let status = 'Green'; 
         
-        if (base && dev && curr) {
+        if (base !== undefined && dev !== undefined && curr !== undefined) {
             const z = Math.abs((curr - base) / dev);
             if (z > 2) status = 'Red';
             else if (z > 1) status = 'Yellow';
@@ -147,7 +151,7 @@ export default function DashboardPage() {
             </tr>
         );
     });
-};
+  };
 
   const handleRunAnalysis = async (e: React.FormEvent) => {
     e.preventDefault();

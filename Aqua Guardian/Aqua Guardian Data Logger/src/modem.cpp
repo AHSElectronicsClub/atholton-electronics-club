@@ -1,29 +1,20 @@
 /**
  * @file modem.cpp
  * @brief Implementation file for A7670E 4G Modem.
- * * Uses TinyGSM library to interact with the modem via AT commands.
- * Handles initialization, GPS, network connection, and HTTP POST.
- * * @version 10.0 - Replaced GPS functions with raw AT commands
- * @date 2025-11-09
  */
 
 // --- HEADER INCLUDES ---
-// config.h must be the first file included in every .cpp
 #include "config.h"
 
+// Define the modem model BEFORE including TinyGsm headers
 #define TINY_GSM_MODEM_SIM7600
 
-// This include order is critical.
 #include <TinyGsm.h>
 #include <TinyGsmClient.h>
 #include "modem.h"
 
-// --- TinyGSM Setup (from config.h) ---
 HardwareSerial SerialAT(SERIAL_AT_PORT);
-
 TinyGsm modem(SerialAT);
-TinyGsmClient client(modem);
-
 
 /**
  * @brief Initializes the modem.
@@ -31,35 +22,39 @@ TinyGsmClient client(modem);
 bool modem_init() {
     Serial.println("Initializing modem...");
 
-    // Wake the modem via hardware pin
-    pinMode(PIN_MODEM_PWR, OUTPUT);
-    digitalWrite(PIN_MODEM_PWR, LOW);
-    delay(1000); 
-    digitalWrite(PIN_MODEM_PWR, HIGH);
-    delay(15000); // Give the modem 15 seconds to boot up. Prolong if not enough.
-
-    // Set modem AT command port baud rate
     SerialAT.begin(SERIAL_AT_BAUD, SERIAL_8N1, PIN_MODEM_RX, PIN_MODEM_TX);
-    
+
+    for (int i = 0; i < 5; i++) {
+        SerialAT.println("AT");
+        delay(100);
+    }
+
+    Serial.println("Checking if modem is already on...");
+    if (!modem.testAT()) {
+        Serial.println("Modem not responding. Toggling power pin...");
+        pinMode(PIN_MODEM_PWR, OUTPUT);
+        digitalWrite(PIN_MODEM_PWR, HIGH);
+        delay(1000); 
+        digitalWrite(PIN_MODEM_PWR, LOW);
+        pinMode(PIN_MODEM_PWR, INPUT); 
+        delay(15000);
+    } else {
+        Serial.println("Modem is already awake. Skipping power toggle.");
+    }
+
     Serial.println("Waiting for modem to respond...");
-    if (!modem.restart()) {
-        Serial.println("Failed to restart modem!");
+    
+    if (!modem.init()) {
+        Serial.println("Failed to initialize modem!");
         return false;
     }
 
     String modemInfo = modem.getModemInfo();
     Serial.printf("Modem Info: %s\n", modemInfo.c_str());
 
-    // Enable GPS
     Serial.println("Enabling GPS... (This may take a moment)");
-    
-    // --- FIX ---
-    // The A7672X library does not have a simple GPS function.
-    // We must send the raw AT command to power on the GNSS (GPS) module.
-    modem.sendAT(GF("AT+CGNSPWR=1"));
-    if (modem.waitResponse() != 1) {
-        Serial.println("Failed to power on GNSS/GPS!");
-    }
+    modem.sendAT(GF("+CGNSSPWR=1")); 
+    modem.waitResponse(2000L);
     
     return true;
 }
@@ -68,67 +63,43 @@ bool modem_init() {
  * @brief Gets GPS coordinates.
  */
 bool modem_get_gps(float& lat, float& lon) {
-    
-    // --- FIX ---
-    // The A7672X library does not have a simple getGPS function.
-    // We must send AT+CGNSINF and manually parse the response.
-
     String res;
-    // Send AT command to get GNSS info
-    modem.sendAT(GF("AT+CGNSINF"));
-    
-    // Wait for the response, which starts with "+CGNSINF:"
-    if (modem.waitResponse(10000L, GF("+CGNSINF:")) != 1) {
+    modem.sendAT(GF("+CGNSSINF"));
+    if (modem.waitResponse(10000L, GF("+CGNSSINF:")) != 1) {
         Serial.println("Failed to get GNSS info response");
         return false;
     }
     
-    // Read the full response line, e.g.:
-    // +CGNSINF: 1,1,20251109004500.000,40.7128,-74.0060,...
     res = modem.stream.readStringUntil('\r');
-    modem.waitResponse(); // Wait for the final "OK"
+    modem.waitResponse();
 
-    // Serial.println(res); // Uncomment this line for debugging
-
-    // --- Manually parse the comma-separated string ---
-    
-    // Find the first comma
     int firstComma = res.indexOf(',');
     if (firstComma == -1) { return false; }
 
-    // Find the second comma (after fix status)
     int secondComma = res.indexOf(',', firstComma + 1);
     if (secondComma == -1) { return false; }
     
-    // Extract fix status (the number between first and second comma)
-    // 1 = Fix, 0 = No Fix
     String fixStatusStr = res.substring(firstComma + 1, secondComma);
     if (fixStatusStr.toInt() != 1) {
         Serial.println("No GPS fix.");
-        return false; // No fix
+        return false;
     }
 
-    // Find the third comma (after UTC)
     int thirdComma = res.indexOf(',', secondComma + 1);
     if (thirdComma == -1) { return false; }
 
-    // Find the fourth comma (after latitude)
     int fourthComma = res.indexOf(',', thirdComma + 1);
     if (fourthComma == -1) { return false; }
 
-    // Extract latitude
     String latStr = res.substring(thirdComma + 1, fourthComma);
     lat = latStr.toFloat();
 
-    // Find the fifth comma (after longitude)
     int fifthComma = res.indexOf(',', fourthComma + 1);
     if (fifthComma == -1) { return false; }
 
-    // Extract longitude
     String lonStr = res.substring(fourthComma + 1, fifthComma);
     lon = lonStr.toFloat();
 
-    // Check for 0,0
     if (lat == 0.0 && lon == 0.0) {
         return false;
     }
@@ -144,13 +115,10 @@ String modem_get_utc_time() {
     float timezone;
     if (modem.getNetworkTime(&year, &month, &day, &hour, &min, &sec, &timezone)) {
         char iso_time[25];
-        // Format as ISO8601: "YYYY-MM-DDTHH:MM:SSZ"
         snprintf(iso_time, sizeof(iso_time), "%04d-%02d-%02dT%02d:%02d:%02dZ",
                  year, month, day, hour, min, sec);
         return String(iso_time);
     } else {
-        // Fallback: return time based on millis()
-        // This is NOT UTC, but it's better than nothing for timestamps
         unsigned long now = millis();
         char fallback_time[25];
         snprintf(fallback_time, sizeof(fallback_time), "T%luS", now / 1000);
@@ -159,7 +127,7 @@ String modem_get_utc_time() {
 }
 
 /**
- * @brief Connects to the GPRS network.
+ * @brief Connects to the GPRS network and configures public DNS.
  */
 bool modem_connect_network() {
     Serial.print("Waiting for network... ");
@@ -175,6 +143,12 @@ bool modem_connect_network() {
         return false;
     }
     Serial.println("OK");
+
+    // Fix Error 713 by setting public Google DNS servers explicitly
+    Serial.println("Configuring DNS servers...");
+    modem.sendAT(GF("+CDNSCFG=\"8.8.8.8\",\"8.8.4.4\""));
+    modem.waitResponse(2000L);
+
     return true;
 }
 
@@ -185,60 +159,87 @@ void modem_disconnect() {
     modem.gprsDisconnect();
     Serial.println("GPRS Disconnected.");
 
-    // Safely detach and power down the cellular module
     modem.poweroff();
     Serial.println("Modem powered down.");
     delay(5000);
 }
 
 /**
- * @brief Performs an HTTP POST request.
+ * @brief Performs a plain HTTP POST request to the webhook proxy.
  */
 bool modem_http_post(String payload) {
-    Serial.printf("Connecting to server: %s...", server);
-    if (!client.connect(server, port)) {
-        Serial.println("FAIL");
+    Serial.println("Testing HTTP POST with httpbin.org...");
+
+    while (modem.stream.available()) {
+        modem.stream.read();
+    }
+
+    modem.sendAT(GF("+HTTPTERM"));
+    modem.waitResponse(2000L); 
+    delay(500);
+
+    modem.sendAT(GF("+HTTPINIT"));
+    if (modem.waitResponse(3000L) != 1) {
+        Serial.println("FAIL (Init Error)");
         return false;
     }
-    Serial.println("OK");
 
-    // Send HTTP POST request
-    client.print(String("POST ") + resource + " HTTP/1.1\r\n");
-    client.print(String("Host: ") + server + "\r\n");
-    client.print("Connection: close\r\n");
-    client.print(String("User-Agent: ") + DEVICE_ID + "\r\n");
-    client.print(String(api_key_header) + ": " + api_key_value + "\r\n");
-    client.print("Content-Type: application/json\r\n");
-    client.print(String("Content-Length: ") + payload.length() + "\r\n");
-    client.print("\r\n");
-    client.print(payload);
+    modem.sendAT(GF("+HTTPSSL=0"));
+    modem.waitResponse(2000L); 
 
-    // Wait for response
-    unsigned long timeout = millis();
-    while (client.connected() && millis() - timeout < 5000L) {
-        // Wait
+    // Point to a reliable plain HTTP test server
+    modem.sendAT(GF("+HTTPPARA=\"URL\",\"http://httpbin.org/post\""));
+    if (modem.waitResponse(3000L) != 1) {
+        Serial.println("FAIL (URL Error)");
+        modem.sendAT(GF("+HTTPTERM"));
+        return false;
     }
 
-    // Read response
-    String responseHeader = "";
-    while (client.available()) {
-        char c = client.read();
-        responseHeader += c;
-        if (c == '\n' && responseHeader.endsWith("\r\n\r\n")) {
-            break; // End of headers
+    modem.sendAT(GF("+HTTPPARA=\"CONTENT\",\"application/json\""));
+    if (modem.waitResponse(2000L) != 1) {
+        Serial.println("FAIL (Content Error)");
+        modem.sendAT(GF("+HTTPTERM"));
+        return false;
+    }
+
+    modem.sendAT(GF("+HTTPDATA="), payload.length(), GF(",10000"));
+    if (modem.waitResponse(5000L, GF("DOWNLOAD")) == 1) {
+        delay(100);
+        modem.stream.print(payload);
+        if (modem.waitResponse(5000L) != 1) {
+            Serial.println("FAIL (Data ACK Error)");
+            modem.sendAT(GF("+HTTPTERM"));
+            return false;
         }
-    }
-
-    // Check for "200 OK"
-    if (responseHeader.indexOf("HTTP/1.1 200 OK") != -1) {
-        // Serial.println("OK");
     } else {
-        Serial.printf("\n--- SERVER ERROR ---\n%s\n--------------------\n", responseHeader.c_str());
-        client.stop();
+        Serial.println("FAIL (Could not send data)");
+        modem.sendAT(GF("+HTTPTERM"));
         return false;
     }
 
-    // Added proper client stop for 200 OK
-    client.stop();
-    return true;
+    modem.sendAT(GF("+HTTPACTION=1"));
+    if (modem.waitResponse(5000L) != 1) {
+        Serial.println("FAIL (Action Error)");
+        modem.sendAT(GF("+HTTPTERM"));
+        return false;
+    }
+    
+    int action = modem.waitResponse(30000L, GF("+HTTPACTION:"));
+    bool success = false;
+    if (action == 1) {
+        String res = modem.stream.readStringUntil('\n');
+        Serial.print(" Server responded: ");
+        Serial.println(res);
+        if (res.indexOf("200") != -1) {
+            success = true;
+        }
+    } else {
+        Serial.println(" FAIL (Timeout)");
+    }
+
+    modem.sendAT(GF("+HTTPTERM"));
+    modem.waitResponse(2000L);
+    delay(500);
+    
+    return success;
 }

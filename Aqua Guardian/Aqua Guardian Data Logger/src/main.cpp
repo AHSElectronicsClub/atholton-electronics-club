@@ -17,13 +17,13 @@
 
 // --- Global Variable Definitions ---
 const char *server = "aqua-guardian-cloud-test.onrender.com";
-const char *resource = "/api/v1/data";
-const int port = 443; 
+const char *resource = "/api/v1/data";                               // Handled by the proxy route
+const int port = 80;                                     // Use port 80 (Plain HTTP) to bypass modem SSL
 const char *api_key_header = "x-api-key";
 const char *api_key_value = "YOUR_SECRET_API_KEY";
-const char *apn = "your_apn";       // e.g., "iot.1nce.net", "hologram", "tm"
-const char *gprsUser = "";          // GPRS username (if any)
-const char *gprsPass = "";          // GPRS password (if any)
+const char *apn = "hologram";
+const char *gprsUser = "";
+const char *gprsPass = "";
 // -----------------------------------
 
 // Define the two main tasks
@@ -136,41 +136,44 @@ void run_upload_window() {
     Serial.println("Network connected. Checking for files to upload...");
     
     File root = FILESYSTEM.open("/");
-    File file = root.openNextFile();
-
-    while(file) {
-        String filename = file.name();
-        // Check if it's a session file
-        if (filename.startsWith("/session_")) {
-            Serial.printf("Found file: %s (%d bytes)\n", filename.c_str(), file.size());
-
-            // Read the file content
-            String payload = storage_read_file(filename);
-            
-            if (payload.length() > 0) {
-                Serial.println("Attempting to upload...");
-                if (modem_http_post(payload)) {
-                    Serial.println("Upload SUCCESSFUL.");
-                    // Delete file after successful upload
-                    storage_delete_file(filename); 
-                    Serial.printf("Deleted file: %s\n", filename.c_str());
-                } else {
-                    Serial.println("Upload FAILED. Will retry next cycle.");
-                }
-            } else {
-                Serial.println("File is empty, deleting.");
-                storage_delete_file(filename);
-            }
-        }
-        file.close(); // Close the current file
-        file = root.openNextFile(); // Open the next file
+    if (!root || !root.isDirectory()) {
+        Serial.println("Failed to open directory");
+        return;
     }
-    root.close(); // Close the root directory
 
+    File file = root.openNextFile();
+    while (file) {
+        String path = String(file.path()); // or file.name()
+        String payload = file.readString();
+        
+        // Close the file safely BEFORE the modem transaction
+        file.close(); 
+
+        Serial.print("Found file: ");
+        Serial.println(path);
+        Serial.println("Attempting to upload...");
+
+        if (modem_http_post(payload)) {
+            Serial.println("Upload SUCCESSFUL.");
+            
+            // Delete the file using the same FILESYSTEM alias
+            if (FILESYSTEM.remove(path)) {
+                Serial.println("Deleted file: " + path);
+            } else {
+                Serial.println("Failed to delete file: " + path);
+            }
+        } else {
+            Serial.println("Upload FAILED. Will retry next cycle.");
+        }
+        
+        // Open the next file for the next iteration
+        file = root.openNextFile();
+    }
+
+    root.close(); 
     Serial.println("Upload window complete.");
     modem_disconnect();
 }
-
 
 /**
  * @brief Enters deep sleep for the configured duration.

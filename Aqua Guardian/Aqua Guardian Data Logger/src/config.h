@@ -48,13 +48,8 @@ extern const char *gprsPass;
 // -- Battery Monitoring --
 #define PIN_BATTERY 25 // Shield D2
 
-// -- 12V Water Leak Sensor Pins --
-// We need two pins for this sensor as per our circuit
-#define PIN_LEAK_POWER 25 // Shield D2 / GPIO 25 (Controls MOSFET switch)
-#define PIN_WATER_LEAK 26 // Shield D3 / GPIO 26 (Reads sensor signal) - *** FIX ***
-
-// -- DS18B20 Temp Sensor (OneWire Bus) --
-#define PIN_ONE_WIRE_BUS 5 // GPIO 5
+// -- Internal Environment Sensor --
+// SHT40 Temp & Humidity uses standard hardware I2C (SDA/SCL pins on the shield)
 
 // -- Other Settings --
 #define DEFAULT_VREF 3300.0 // 3.3V VREF in mV

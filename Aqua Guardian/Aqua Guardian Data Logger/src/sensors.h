@@ -25,6 +25,7 @@ struct SensorSample {
     float in_do = -1.0; // "in_do" to avoid "do" keyword
     float orp = -1.0;
     float battery_v = 0.0;
+    float humidity = -1.0;
 };
 
 /**

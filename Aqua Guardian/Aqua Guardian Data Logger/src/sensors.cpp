@@ -7,17 +7,21 @@
  * @date 2025-11-11
  */
 
-// --- THIS IS A CRITICAL FIX ---
-// config.h must be the first file included in every .cpp
 #include "config.h" 
-
 #include "sensors.h"
-#include "modem.h" // For modem_get_utc_time()
+#include "modem.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+// --- NEW: Adafruit SHT40 Includes ---
+#include <Adafruit_Sensor.h> 
+#include <Adafruit_SHT4x.h>  
+
 // --- Sensor Libraries Setup ---
-// DS18B20 Temperature Sensor
+// Initialize the SHT40 object globally so all functions can see it
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+
+// DS18B20 Temperature Sensor (Keep if still physically wired, or delete if fully replaced)
 OneWire oneWire(PIN_ONE_WIRE_BUS);
 DallasTemperature dallas_temp(&oneWire);
 
@@ -104,7 +108,7 @@ void sensors_get_initial_data(SensorReadings& session_data) {
     //     Serial.println("WARNING: Water leak detected!");
     // } else {
     //     Serial.println("No leak detected.");
-    // }   
+    // }
     // ------------------------------------------------------   
     
     session_data.sample_count = 0;
@@ -116,6 +120,12 @@ void sensors_get_initial_data(SensorReadings& session_data) {
  * as that is a high-power operation done once in sensors_get_initial_data)
  */
 void sensors_read_all(SensorSample& sample) {
+    sensors_event_t humidity, temp;
+    sht4.getEvent(&humidity, &temp);
+    
+    // Internal enclosure temperature and humidity
+    sample.temp = temp.temperature;
+    sample.humidity = humidity.relative_humidity;
     // --- Read DS18B20 Temperature ---
     dallas_temp.requestTemperatures(); 
     sample.temp = dallas_temp.getTempCByIndex(0);

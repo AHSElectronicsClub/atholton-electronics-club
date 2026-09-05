@@ -89,8 +89,15 @@ void run_logging_window() {
             Serial.printf("Taking sample %d/%d...\n", session_data.sample_count + 1, MAX_SAMPLES_PER_SESSION);
             
             SensorSample sample;
-            sample.time = modem_get_utc_time(); // Get timestamp
-            sensors_read_all(sample); // Read all sensors
+            sample.time = modem_get_utc_time(); 
+            sensors_read_all(sample); 
+            
+            // --- NEW: HUMIDITY LEAK DETECTION ---
+            // If internal humidity exceeds 85%, assume water ingress
+            if (sample.humidity > 85.0) {
+                session_data.water_leak = true;
+                Serial.println("WARNING: High internal humidity! Flagging water leak.");
+            }
             
             // Add sample to the session data
             if (session_data.sample_count < MAX_SAMPLES_PER_SESSION) {

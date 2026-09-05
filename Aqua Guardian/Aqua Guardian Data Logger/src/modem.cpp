@@ -37,7 +37,7 @@ bool modem_init() {
         delay(1000); 
         digitalWrite(PIN_MODEM_PWR, LOW);
         pinMode(PIN_MODEM_PWR, INPUT); 
-        delay(15000);
+        delay(10000);
     } else {
         Serial.println("Modem is already awake. Skipping power toggle.");
     }
@@ -144,7 +144,6 @@ bool modem_connect_network() {
     }
     Serial.println("OK");
 
-    // Fix Error 713 by setting public Google DNS servers explicitly
     Serial.println("Configuring DNS servers...");
     modem.sendAT(GF("+CDNSCFG=\"8.8.8.8\",\"8.8.4.4\""));
     modem.waitResponse(2000L);
@@ -165,10 +164,10 @@ void modem_disconnect() {
 }
 
 /**
- * @brief Performs a plain HTTP POST request to the webhook proxy.
+ * @brief Performs a plain HTTP POST request to the PythonAnywhere bridge.
  */
 bool modem_http_post(String payload) {
-    Serial.println("Testing HTTP POST with httpbin.org...");
+    Serial.println("Connecting to PythonAnywhere bridge via plain HTTP...");
 
     while (modem.stream.available()) {
         modem.stream.read();
@@ -184,11 +183,12 @@ bool modem_http_post(String payload) {
         return false;
     }
 
+    // Disable SSL for plain HTTP (port 80) to PythonAnywhere
     modem.sendAT(GF("+HTTPSSL=0"));
     modem.waitResponse(2000L); 
 
-    // Point to a reliable plain HTTP test server
-    modem.sendAT(GF("+HTTPPARA=\"URL\",\"http://httpbin.org/post\""));
+    // Target your PythonAnywhere Flask app endpoint
+    modem.sendAT(GF("+HTTPPARA=\"URL\",\"http://AHSEC.pythonanywhere.com/upload\""));
     if (modem.waitResponse(3000L) != 1) {
         Serial.println("FAIL (URL Error)");
         modem.sendAT(GF("+HTTPTERM"));
@@ -230,7 +230,7 @@ bool modem_http_post(String payload) {
         String res = modem.stream.readStringUntil('\n');
         Serial.print(" Server responded: ");
         Serial.println(res);
-        if (res.indexOf("200") != -1) {
+        if (res.indexOf("200") != -1 || res.indexOf("201") != -1) {
             success = true;
         }
     } else {

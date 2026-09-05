@@ -60,12 +60,14 @@ String storage_save_session(SensorReadings& readings) {
         JsonObject s = samples.add<JsonObject>();
         s["time"] = readings.samples[i].time;
         s["pH"] = readings.samples[i].ph;
-        s["temp"] = readings.samples[i].temp;
+        s["temp"] = readings.samples[i].temp;         // Water temperature
+        s["air_temp"] = readings.samples[i].air_temp; // Internal buoy air temperature
         s["EC"] = readings.samples[i].ec;
         s["turbidity"] = readings.samples[i].turb;
         s["DO"] = readings.samples[i].in_do;
         s["ORP"] = readings.samples[i].orp;
         s["battery_v"] = readings.samples[i].battery_v;
+        s["humidity"] = readings.samples[i].humidity;
     }
 
     // Serialize JSON to file

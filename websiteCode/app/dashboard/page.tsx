@@ -39,17 +39,16 @@ export default function DashboardPage() {
     
     // 1. Raw Values Graph
     const timestamps = rawData.map((d: any) => d.timestamp);
-    const sensors = ['pH', 'DO', 'EC', 'Turbidity', 'Temp', 'air_temp', 'humidity', 'ORP'];
-const sensorColors: any = { 
-  'pH': '#1f77b4', 
-  'DO': '#ff7f0e', 
-  'EC': '#2ca02c', 
-  'Turbidity': '#d62728', 
-  'Temp': '#9467bd',        // Water temperature graph line
-  'air_temp': '#e67e22',    // Enclosure air temperature graph line
-  'humidity': '#3498db',    // Enclosure humidity graph line
-  'ORP': '#8c564b' 
-};
+    // Inside processAndRenderDashboard and getBaselineRows in page_2.tsx:
+    const sensors = ['pH', 'DO', 'EC', 'Turbidity', 'Temp', 'ORP'];
+    const sensorColors: any = { 
+      'pH': '#1f77b4', 
+      'DO': '#ff7f0e', 
+      'EC': '#2ca02c', 
+      'Turbidity': '#d62728', 
+      'Temp': '#9467bd', 
+      'ORP': '#8c564b' 
+    };
 
     const rawTraces = sensors.map(sensor => ({
       x: timestamps,

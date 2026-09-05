@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Droplet, Thermometer, Zap, Battery, AlertTriangle, Navigation } from 'lucide-react';
+import { Activity, Droplet, Thermometer, Zap, Battery, AlertTriangle, Navigation, Wind } from 'lucide-react';
 
 interface BuoyData {
   buoy_id: string;
@@ -9,6 +9,8 @@ interface BuoyData {
   water_leak: boolean;
   ph: number | null;
   temp: number | null;
+  air_temp: number | null;
+  humidity: number | null;
   ec: number | null;
   turbidity: number | null;
   DO: number | null;
@@ -29,6 +31,23 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
     return `${val.toFixed(decimals)}${suffix}`;
   };
 
+  // Enclosure Threshold Status Helpers
+  const getAirTempStatus = (t: number | null) => {
+    if (t === null) return { text: 'N/A', color: 'bg-gray-100 text-gray-600' };
+    if (t > 75) return { text: 'Critical', color: 'bg-red-100 text-red-600' };
+    if (t > 50) return { text: 'Warning', color: 'bg-yellow-100 text-yellow-700' };
+    return { text: 'Normal', color: 'bg-emerald-100 text-emerald-700' };
+  };
+
+  const getHumidityStatus = (h: number | null) => {
+    if (h === null) return { text: 'N/A', color: 'bg-gray-100 text-gray-600' };
+    if (h > 85) return { text: 'Critical', color: 'bg-red-100 text-red-600' };
+    if (h > 70) return { text: 'Warning', color: 'bg-yellow-100 text-yellow-700' };
+    return { text: 'Normal', color: 'bg-emerald-100 text-emerald-700' };
+  };
+
+  const airTempStatus = getAirTempStatus(data.air_temp);
+  const humidityStatus = getHumidityStatus(data.humidity);
   const hasValidGps = data.gps_lat !== null && data.gps_lon !== null && !isNaN(data.gps_lat) && !isNaN(data.gps_lon);
 
   return (
@@ -42,7 +61,7 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
         <div className="flex items-center gap-3">
           {data.water_leak && (
             <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-semibold uppercase tracking-wider">
-              <AlertTriangle size={14} /> Leak
+              <AlertTriangle size={14} /> Leak Detected
             </div>
           )}
           {batteryVal !== null && (
@@ -61,13 +80,43 @@ export const BuoyDataCard: React.FC<{ data: BuoyData }> = ({ data }) => {
         <span>{hasValidGps ? `${data.gps_lat?.toFixed(4)}°, ${data.gps_lon?.toFixed(4)}°` : 'N/A'}</span>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <MetricItem icon={<Thermometer />} label="Temp" value={formatVal(data.temp, 1, '°C')} color="text-orange-500" />
+      {/* Water Metrics Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+        <MetricItem icon={<Thermometer />} label="Water Temp" value={formatVal(data.temp, 1, '°C')} color="text-orange-500" />
         <MetricItem icon={<Droplet />} label="pH Level" value={formatVal(data.ph, 2)} color="text-blue-500" />
         <MetricItem icon={<Activity />} label="Dis. Oxygen" value={formatVal(data.DO, 1, ' mg/L')} color="text-cyan-500" />
         <MetricItem icon={<Zap />} label="Conductivity" value={formatVal(data.ec, 0, ' µS/cm')} color="text-purple-500" />
         <MetricItem icon={<Activity />} label="Turbidity" value={formatVal(data.turbidity, 1, ' NTU')} color="text-amber-500" />
         <MetricItem icon={<Activity />} label="ORP" value={formatVal(data.orp, 0, ' mV')} color="text-indigo-500" />
+      </div>
+
+      {/* Enclosure Protection Metrics Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="flex flex-col p-3 rounded-xl bg-gray-50 border border-gray-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 text-orange-600 opacity-90">
+              <Thermometer size={18} />
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-500">Internal Air Temp</span>
+            </div>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${airTempStatus.color}`}>
+              {airTempStatus.text}
+            </span>
+          </div>
+          <div className="text-xl font-semibold text-gray-800">{formatVal(data.air_temp, 1, '°C')}</div>
+        </div>
+
+        <div className="flex flex-col p-3 rounded-xl bg-gray-50 border border-gray-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 text-blue-600 opacity-90">
+              <Wind size={18} />
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-500">Internal Humidity</span>
+            </div>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${humidityStatus.color}`}>
+              {humidityStatus.text}
+            </span>
+          </div>
+          <div className="text-xl font-semibold text-gray-800">{formatVal(data.humidity, 1, '%')}</div>
+        </div>
       </div>
 
       {/* Interactive Map View */}

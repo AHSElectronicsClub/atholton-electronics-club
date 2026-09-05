@@ -10,10 +10,10 @@
 #define CONFIG_H
 
 // --- Device Settings ---
-#define DEVICE_ID "AG-01"         // Unique ID for this device
-#define DEEP_SLEEP_DURATION_SEC 45   // Sleep for 45 seconds
-#define SENSOR_READ_INTERVAL_MS 10 // Sample sensors every 10 seconds
-#define MAX_SAMPLES_PER_SESSION 3    // Max sensor readings per sleep cycle (12 * 10s = 120s = 2 min)
+#define DEVICE_ID "AG-01"         
+#define DEEP_SLEEP_DURATION_SEC 900  // INCREASED: Sleep for 15 minutes (900 seconds) instead of 45s
+#define SENSOR_READ_INTERVAL_MS 1000 // ADJUSTED: Sample sensors every 1 second during the active window
+#define MAX_SAMPLES_PER_SESSION 5    // ADJUSTED: Take 5 samples over a 5-second active window per session
 
 // --- API Endpoint Configuration ---
 // These are now DECLARATIONS. The DEFINITIONS are in main.cpp.

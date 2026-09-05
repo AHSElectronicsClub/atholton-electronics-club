@@ -17,6 +17,9 @@ export default function DashboardPage() {
   
   // Real data state instead of dummy import
   const [dashboardData, setDashboardData] = useState<any>(null);
+  
+  // New error state for handling missing data cleanly
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   // Form input states
   const [buoyId, setBuoyId] = useState('AG-01'); // Matches your Supabase setup
@@ -141,6 +144,7 @@ export default function DashboardPage() {
   const handleRunAnalysis = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAnalysisError(null); // Clear old errors before running
     
     try {
       // LIVE RENDER API CALL
@@ -154,14 +158,11 @@ export default function DashboardPage() {
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
-
       const data = await response.json();
       
-      if (data.error) {
-        throw new Error(data.error);
+      // Catch backend errors (like our 404 No Data error)
+      if (!response.ok || data.error) {
+        throw new Error(data.error || `Server returned ${response.status}`);
       }
 
       setDashboardData(data);
@@ -173,7 +174,8 @@ export default function DashboardPage() {
 
     } catch (err: any) {
       console.error(err);
-      alert("Error fetching data: " + err.message);
+      // Set the UI error instead of using alert()
+      setAnalysisError(err.message);
     } finally {
       setLoading(false);
     }
@@ -210,6 +212,14 @@ export default function DashboardPage() {
             ) : (
                 <form className="api-form" onSubmit={handleRunAnalysis}>
                     <h2 className="form-group full-width" style={{textAlign:'center'}}>Run New Analysis</h2>
+                    
+                    {/* NEW ERROR BOX UI */}
+                    {analysisError && (
+                      <div className="form-group full-width" style={{ background: '#fee2e2', color: '#991b1b', padding: '15px', borderRadius: '8px', textAlign: 'center', border: '1px solid #f87171' }}>
+                        {analysisError}
+                      </div>
+                    )}
+
                     <div className="form-group full-width">
                         <label>Buoy ID</label>
                         <input type="text" value={buoyId} onChange={(e) => setBuoyId(e.target.value)} required />

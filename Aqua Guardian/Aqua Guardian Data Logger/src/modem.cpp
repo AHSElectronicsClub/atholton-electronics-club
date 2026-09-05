@@ -128,6 +128,30 @@ String modem_get_utc_time() {
 }
 
 /**
+ * @brief Waits for the modem to synchronize time with the cell network.
+ */
+bool modem_wait_for_time(int timeout_sec) {
+    int year, month, day, hour, min, sec;
+    float timezone;
+    
+    Serial.print("Waiting for network time sync");
+    unsigned long start = millis();
+    while (millis() - start < (timeout_sec * 1000UL)) {
+        if (modem.getNetworkTime(&year, &month, &day, &hour, &min, &sec, &timezone)) {
+            // Validate that we got a real year (e.g., greater than 2024)
+            if (year >= 2025) {
+                Serial.println(" OK");
+                return true;
+            }
+        }
+        Serial.print(".");
+        delay(2000);
+    }
+    Serial.println(" Timeout. Using fallback.");
+    return false;
+}
+
+/**
  * @brief Connects to the GPRS network and configures public DNS.
  */
 bool modem_connect_network() {

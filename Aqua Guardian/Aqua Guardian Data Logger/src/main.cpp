@@ -54,10 +54,16 @@ void setup() {
     // Initialize modem
     if (!modem_init()) {
         Serial.println("Modem initialization FAILED! Proceeding to log data...");
-        // Don't sleep; we can still log data even if modem fails
     }
 
-    // Get initial data (GPS, water leak, session ID)
+    // --- NEW: Wait for network connection and time sync ---
+    if (modem_connect_network()) {
+        // Give the network up to 20 seconds to provide real UTC time
+        modem_wait_for_time(20);
+    }
+    // -----------------------------------------------------
+
+    // Get initial data (GPS, Time, Leak)
     sensors_get_initial_data(session_data);
 
     // Run the two main tasks

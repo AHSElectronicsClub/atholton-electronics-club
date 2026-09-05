@@ -1,7 +1,7 @@
 export function adaptSupabaseRowToBuoyData(row: any) {
   if (!row) return null;
 
-  // Safely parse samples if it's a string or an array
+  // Safe fallback for legacy rows if a JSON samples array still exists
   let samplesArray = row.samples;
   if (typeof samplesArray === 'string') {
     try {
@@ -28,12 +28,14 @@ export function adaptSupabaseRowToBuoyData(row: any) {
     buoy_id: row.buoy_id || row.device_id || 'AG-01',
     friendly_name: row.friendly_name || 'Aqua Guardian Buoy',
     water_body_type: row.water_body_type || 'Freshwater',
-    timestamp: row.timestamp || new Date().toISOString(),
+    timestamp: row.timestamp || row.sample_time || new Date().toISOString(),
     water_leak: Boolean(row.water_leak),
     
-    // Map values with fallback checks for flat columns, uppercase keys, and lowercase keys
+    // Map values supporting normalized flat columns, uppercase keys, and legacy JSON fallback
     ph: row.ph ?? latestSample.pH ?? latestSample.ph ?? null,
-    temp: row.temp ?? latestSample.temp ?? latestSample.Temp ?? null,
+    temp: row.temp ?? latestSample.temp ?? latestSample.Temp ?? null,             // Water temperature (DS18B20)
+    air_temp: row.air_temp ?? latestSample.air_temp ?? null,                     // Enclosure air temperature (SHT40)
+    humidity: row.humidity ?? latestSample.humidity ?? null,                     // Enclosure humidity (SHT40)
     ec: row.ec ?? latestSample.EC ?? latestSample.ec ?? null,
     turbidity: row.turbidity ?? latestSample.Turb ?? latestSample.turbidity ?? null,
     DO: row.DO ?? latestSample.DO ?? latestSample.do ?? null,
@@ -41,7 +43,7 @@ export function adaptSupabaseRowToBuoyData(row: any) {
     battery_v: row.battery_v ?? latestSample.Bat ?? latestSample.battery_v ?? null,
 
     // Map GPS coordinates
-    gps_lat: row.gps_lat ?? gpsObj.lat ?? gpsObj.latitude ?? null,
-    gps_lon: row.gps_lon ?? gpsObj.lon ?? gpsObj.longitude ?? null,
+    gps_lat: row.gps_lat ?? gpsObj.lat ?? gpsObj.latitude ?? 0,
+    gps_lon: row.gps_lon ?? gpsObj.lon ?? gpsObj.longitude ?? 0,
   };
 }

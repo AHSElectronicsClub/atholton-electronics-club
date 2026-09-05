@@ -66,14 +66,31 @@ void sensors_get_initial_data(SensorReadings& session_data) {
     // Use current time as session ID
     session_data.session_id = modem_get_utc_time();
 
-    // Get GPS fix (if available)
-    float lat, lon;
-    if (modem_get_gps(lat, lon)) {
-        Serial.printf("GPS Fix: %.4f, %.4f\n", lat, lon);
+    // --- NEW GPS WAIT LOOP ---
+    float lat = 0.0, lon = 0.0;
+    bool gpsFix = false;
+    
+    Serial.print("Waiting for GPS fix (up to 2 minutes)");
+    unsigned long startGPS = millis();
+    
+    // Loop for up to 120,000 milliseconds (2 minutes)
+    while (millis() - startGPS < 120000) {
+        if (modem_get_gps(lat, lon)) {
+            gpsFix = true;
+            break; // Exit the loop early if we get a fix!
+        }
+        Serial.print("."); // Print a dot to show it's still waiting
+        delay(3000);       // Wait 3 seconds before asking the modem again
+    }
+
+    if (gpsFix) {
+        Serial.printf("\nGPS Fix Acquired: %.4f, %.4f\n", lat, lon);
         session_data.gps_lat = lat;
         session_data.gps_lon = lon;
     } else {
-        Serial.println("No GPS fix.");
+        Serial.println("\nGPS timeout. Proceeding with default coordinates (0,0).");
+        session_data.gps_lat = 0.0;
+        session_data.gps_lon = 0.0;
     }
 
     // --- Disconnected: Power on and read the 12V water leak sensor ---

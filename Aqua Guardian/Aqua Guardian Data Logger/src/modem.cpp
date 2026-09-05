@@ -65,8 +65,9 @@ bool modem_init() {
 bool modem_get_gps(float& lat, float& lon) {
     String res;
     modem.sendAT(GF("+CGNSSINF"));
-    if (modem.waitResponse(10000L, GF("+CGNSSINF:")) != 1) {
-        Serial.println("Failed to get GNSS info response");
+    
+    // Reduced wait time since we are looping, and muted the error print
+    if (modem.waitResponse(2000L, GF("+CGNSSINF:")) != 1) {
         return false;
     }
     
@@ -81,7 +82,7 @@ bool modem_get_gps(float& lat, float& lon) {
     
     String fixStatusStr = res.substring(firstComma + 1, secondComma);
     if (fixStatusStr.toInt() != 1) {
-        Serial.println("No GPS fix.");
+        // Muted the "No GPS fix." print to avoid serial spam during the wait loop
         return false;
     }
 

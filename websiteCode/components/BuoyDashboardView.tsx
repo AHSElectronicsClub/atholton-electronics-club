@@ -7,7 +7,6 @@ interface BuoyDashboardViewProps {
 }
 
 export default function BuoyDashboardView({ rawSupabaseRows }: BuoyDashboardViewProps) {
-  // Ensure rawSupabaseRows is an array before mapping
   const rows = Array.isArray(rawSupabaseRows) ? rawSupabaseRows : [];
 
   return (
@@ -17,6 +16,7 @@ export default function BuoyDashboardView({ rawSupabaseRows }: BuoyDashboardView
       ) : (
         rows.map((row, index) => {
           const adaptedData = adaptSupabaseRowToBuoyData(row);
+          if (!adaptedData) return null; // Skip if adaptation fails
           return <BuoyDataCard key={row.session_id || index} data={adaptedData} />;
         })
       )}

@@ -11,7 +11,7 @@
 
 // --- Device Settings ---
 #define DEVICE_ID "AG-01"
-#define DEEP_SLEEP_DURATION_SEC 35  // Sleep for 45 minutes between measurement/transmission cycles(2700)
+#define DEEP_SLEEP_DURATION_SEC 2700  // Sleep for 45 minutes between measurement/transmission cycles(2700)
 #define SENSOR_READ_INTERVAL_MS 1000 // Take one sample every second
 #define MAX_SAMPLES_PER_SESSION 10  // Take 10 samples = 10-second measurement window
 

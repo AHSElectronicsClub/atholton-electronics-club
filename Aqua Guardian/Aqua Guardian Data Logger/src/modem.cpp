@@ -24,22 +24,26 @@ bool modem_init() {
 
     SerialAT.begin(SERIAL_AT_BAUD, SERIAL_8N1, PIN_MODEM_RX, PIN_MODEM_TX);
 
-    for (int i = 0; i < 5; i++) {
-        SerialAT.println("AT");
-        delay(100);
-    }
-
     Serial.println("Checking if modem is already on...");
     if (!modem.testAT()) {
         Serial.println("Modem not responding. Toggling power pin...");
         pinMode(PIN_MODEM_PWR, OUTPUT);
         digitalWrite(PIN_MODEM_PWR, HIGH);
-        delay(1000); 
+        delay(2500); 
         digitalWrite(PIN_MODEM_PWR, LOW);
         pinMode(PIN_MODEM_PWR, INPUT); 
-        delay(1500);
+        
+        // Increased delay to 10 seconds for a safe boot margin
+        delay(10000); 
     } else {
         Serial.println("Modem is already awake. Skipping power toggle.");
+    }
+
+    Serial.println("Synchronizing baud rate...");
+    // Moved the autobaud sync here, AFTER the modem is guaranteed to be powered on
+    for (int i = 0; i < 5; i++) {
+        SerialAT.println("AT");
+        delay(1000);
     }
 
     Serial.println("Waiting for modem to respond...");

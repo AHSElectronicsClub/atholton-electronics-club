@@ -160,7 +160,18 @@ void run_upload_window() {
         String payload = file.readString();
         
         // Close the file safely BEFORE the modem transaction
-        file.close(); 
+        file.close();
+        
+        // Intercept and delete fallback timestamp files ---
+        if (path.indexOf("_T") != -1 && path.indexOf("S.json") != -1) {
+            Serial.print("Deleting file with invalid fallback timestamp: ");
+            Serial.println(path);
+            FILESYSTEM.remove(path);
+            
+            // Move to the next file and skip the upload attempt
+            file = root.openNextFile();
+            continue;
+        }
 
         Serial.print("Found file: ");
         Serial.println(path);

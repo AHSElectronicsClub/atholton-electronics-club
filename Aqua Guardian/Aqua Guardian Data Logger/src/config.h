@@ -11,9 +11,9 @@
 
 // --- Device Settings ---
 #define DEVICE_ID "AG-01"
-#define DEEP_SLEEP_DURATION_SEC 2700  // Sleep for 45 minutes between measurement/transmission cycles
+#define DEEP_SLEEP_DURATION_SEC 35  // Sleep for 45 minutes between measurement/transmission cycles(2700)
 #define SENSOR_READ_INTERVAL_MS 1000 // Take one sample every second
-#define MAX_SAMPLES_PER_SESSION 20  // Take 20 samples = 20-second measurement window
+#define MAX_SAMPLES_PER_SESSION 10  // Take 10 samples = 10-second measurement window
 
 
 // --- API Endpoint Configuration ---

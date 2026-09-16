@@ -54,7 +54,7 @@ export const MENTORS_DATA: Mentor[] = [
 ];
 
 export const TEAM_DATA: TeamMember[] = [
-  { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead & Software Team Co-Lead', imageUrl: '/images/anwar.jpg' },
+  { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead / Software Team Co-Lead', imageUrl: '/images/anwar.jpg' },
   { id: 2, name: 'Austen Shaheen', title: 'President / Electrical Team Lead', imageUrl: '/images/austen.jpg' },
   { id: 3, name: 'Shalin Vakil', title: 'Vice President / Software Team Co-Lead', imageUrl: '/images/shalin.jpg' },
   { id: 4, name: 'Ayaan Kalra', title: 'Software Team Co-Lead / Outreach', imageUrl: '/images/ayaan.jpg' },

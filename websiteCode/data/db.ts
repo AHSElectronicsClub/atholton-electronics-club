@@ -17,21 +17,20 @@ The project addresses the existing data gap in water quality monitoring by focus
 
 We believe that building a high-impact, open-source technology is a direct way to help the community.`,
     partsList: [
-      'Cellular Modem (LTE Cat-M / NB-IoT)',
-      'ESP32 (or similar microcontroller)',
+      'Cellular Modem (SIM7670G)',
+      'ESP32 (Firebeetle)',
       'Industrial pH Probe',
       'Dissolved Oxygen (DO) Probe',
       'Turbidity Sensor (optical)',
-      'Temperature Sensor (PT100/DS18B20)',
+      'Temperature Sensor (DS18B20)',
       'Conductivity (EC) Probe',
       'ORP Probe',
       'Solar Panel & Charge Controller',
-      '18650 Battery Pack with Battery Management',
-      'Waterproof Buoy Enclosure & Mounting Hardware',
-      'Onboard Edge Compute Module (optional for preprocessing)'
+      '6000mAh Battery Pack with BMS',
+      'Waterproof Buoy Enclosure & Mounting Hardware printed from ASA'
     ],
     images: [
-      '/images/AquaGuardian.png',
+      '/images/buoyCAD.jpg',
       '/images/sensor-array.jpg',
       '/images/lake-deployment.jpg'
     ],

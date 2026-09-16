@@ -17,21 +17,20 @@ The project addresses the existing data gap in water quality monitoring by focus
 
 We believe that building a high-impact, open-source technology is a direct way to help the community.`,
     partsList: [
-      'Cellular Modem (LTE Cat-M / NB-IoT)',
-      'ESP32 (or similar microcontroller)',
+      'Cellular Modem (SIM7670G)',
+      'ESP32 (Firebeetle)',
       'Industrial pH Probe',
       'Dissolved Oxygen (DO) Probe',
       'Turbidity Sensor (optical)',
-      'Temperature Sensor (PT100/DS18B20)',
+      'Temperature Sensor (DS18B20)',
       'Conductivity (EC) Probe',
       'ORP Probe',
       'Solar Panel & Charge Controller',
-      '18650 Battery Pack with Battery Management',
-      'Waterproof Buoy Enclosure & Mounting Hardware',
-      'Onboard Edge Compute Module (optional for preprocessing)'
+      '6000mAh Battery Pack with BMS',
+      'Waterproof Buoy Enclosure & Mounting Hardware printed from ASA'
     ],
     images: [
-      '/images/AquaGuardian.png',
+      '/images/buoyCAD.jpg',
       '/images/sensor-array.jpg',
       '/images/lake-deployment.jpg'
     ],
@@ -55,10 +54,10 @@ export const MENTORS_DATA: Mentor[] = [
 ];
 
 export const TEAM_DATA: TeamMember[] = [
-  { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead', imageUrl: '/images/anwar.jpg' },
+  { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead / Software Team Co-Lead', imageUrl: '/images/anwar.jpg' },
   { id: 2, name: 'Austen Shaheen', title: 'President / Electrical Team Lead', imageUrl: '/images/austen.jpg' },
-  { id: 3, name: 'Shalin Vakil', title: 'Vice President / Software Team Lead', imageUrl: '/images/shalin.jpg' },
-  { id: 4, name: 'Ayaan Kalra', title: 'Software Team Lead / Outreach', imageUrl: '/images/ayaan.jpg' },
+  { id: 3, name: 'Shalin Vakil', title: 'Vice President / Software Team Co-Lead', imageUrl: '/images/shalin.jpg' },
+  { id: 4, name: 'Ayaan Kalra', title: 'Software Team Co-Lead / Outreach', imageUrl: '/images/ayaan.jpg' },
   { id: 5, name: 'Timothy Ward', title: 'Mechanical Team Co-Lead', imageUrl: '/images/timothy.jpg' },
   { id: 6, name: 'Simarpreet Arri', title: 'Electrical Team Co-Lead', imageUrl: '/images/simar.jpg' }, 
 ];

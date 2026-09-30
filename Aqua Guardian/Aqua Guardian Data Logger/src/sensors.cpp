@@ -53,10 +53,10 @@ void sensors_get_initial_data(SensorReadings& session_data) {
     float lat = 0.0, lon = 0.0;
     bool gpsFix = false;
     
-    Serial.print("Waiting for GPS fix (up to 60 Seconds)");
+    Serial.print("Waiting for GPS fix (up to 3 Minutes)");
     unsigned long startGPS = millis();
-    
-    while (millis() - startGPS < 60000) {
+
+    while (millis() - startGPS < 180000) {
         if (modem_get_gps(lat, lon)) {
             gpsFix = true;
             break; 

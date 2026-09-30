@@ -64,52 +64,42 @@ bool modem_init() {
 }
 
 /**
- * @brief Gets GPS coordinates.
+ * @brief Gets GPS coordinates using SIM7670G compatible command (AT+CGNSSINFO).
  */
 bool modem_get_gps(float& lat, float& lon) {
-    String res;
-    modem.sendAT(GF("+CGNSSINF"));
-    
-    // Reduced wait time since we are looping, and muted the error print
-    if (modem.waitResponse(2000L, GF("+CGNSSINF:")) != 1) {
+    modem.sendAT(GF("+CGNSSINFO"));
+    if (modem.waitResponse(2000L, GF("+CGNSSINFO:")) != 1) {
         return false;
     }
-    
-    res = modem.stream.readStringUntil('\r');
+
+    String res = modem.stream.readStringUntil('\n');
     modem.waitResponse();
 
-    int firstComma = res.indexOf(',');
-    if (firstComma == -1) { return false; }
+    // Find comma indices to extract lat/lon fields
+    int commas[9];
+    int pos = -1;
+    for (int i = 0; i < 9; i++) {
+        pos = res.indexOf(',', pos + 1);
+        if (pos == -1) return false;
+        commas[i] = pos;
+    }
 
-    int secondComma = res.indexOf(',', firstComma + 1);
-    if (secondComma == -1) { return false; }
-    
-    String fixStatusStr = res.substring(firstComma + 1, secondComma);
-    if (fixStatusStr.toInt() != 1) {
-        // Muted the "No GPS fix." print to avoid serial spam during the wait loop
+    String latStr = res.substring(commas[4] + 1, commas[5]);
+    String latDir = res.substring(commas[5] + 1, commas[6]);
+    String lonStr = res.substring(commas[6] + 1, commas[7]);
+    String lonDir = res.substring(commas[7] + 1, commas[8]);
+
+    if (latStr.length() == 0 || lonStr.length() == 0) {
         return false;
     }
 
-    int thirdComma = res.indexOf(',', secondComma + 1);
-    if (thirdComma == -1) { return false; }
-
-    int fourthComma = res.indexOf(',', thirdComma + 1);
-    if (fourthComma == -1) { return false; }
-
-    String latStr = res.substring(thirdComma + 1, fourthComma);
     lat = latStr.toFloat();
-
-    int fifthComma = res.indexOf(',', fourthComma + 1);
-    if (fifthComma == -1) { return false; }
-
-    String lonStr = res.substring(fourthComma + 1, fifthComma);
     lon = lonStr.toFloat();
 
-    if (lat == 0.0 && lon == 0.0) {
-        return false;
-    }
+    if (latDir.equalsIgnoreCase("S")) lat = -lat;
+    if (lonDir.equalsIgnoreCase("W")) lon = -lon;
 
-    return true;
+    return (lat != 0.0 || lon != 0.0);
 }
 
 /**

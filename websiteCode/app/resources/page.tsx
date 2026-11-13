@@ -1,137 +1,154 @@
 'use client';
 import React from 'react';
-import PageContainer from '../../components/PageContainer';
-import CodeSnippet from '../../components/CodeSnippet'; 
-import { RESOURCES_DATA } from '../../data/db'; 
+import { Code2, Wrench, Link2, ArrowUpRight, Activity, Compass, FolderGit2 } from 'lucide-react';
+import PageHero from '../../components/PageHero';
+import SectionHeading from '../../components/SectionHeading';
+import JoinCTA from '../../components/JoinCTA';
+import CodeSnippet from '../../components/CodeSnippet';
+import { RESOURCES_DATA } from '../../data/db';
 
-// --- In-lined SVG Icons ---
-const LinkIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-  </svg>
-);
-const CodeIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5 0l-4.5 16.5" />
-  </svg>
-);
-const WrenchIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.83-5.83M11.42 15.17l.75-.75a8.967 8.967 0 01-2.312 2.312l-.75-.75M11.42 15.17L5.83 21M17.25 21L21 17.25M8.25 6l1.414-1.414a2.25 2.25 0 013.182 0l4.95 4.95a2.25 2.25 0 010 3.182l-1.414 1.414M8.25 6L6 8.25m0 0l-1.414 1.414a2.25 2.25 0 01-3.182 0L1.05 9.318a2.25 2.25 0 010-3.182l1.414-1.414a2.25 2.25 0 013.182 0l4.95 4.95z" />
-  </svg>
-);
-
-// --- ResourceCard component ---
 const ResourceCard = ({ resource }: { resource: typeof RESOURCES_DATA[0] }) => {
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'code':
-        return <CodeIcon className="w-6 h-6 text-gold" />;
-      case 'supplier':
-        return <WrenchIcon className="w-6 h-6 text-gold" />;
-      default:
-        return <LinkIcon className="w-6 h-6 text-gold" />;
-    }
-  };
-
+  const Icon = resource.type === 'code' ? Code2 : resource.type === 'supplier' ? Wrench : Link2;
+  const label = resource.type === 'code' ? 'Code' : resource.type === 'supplier' ? 'Parts supplier' : 'Link';
   return (
-    <a 
-      href={resource.link} 
-      target="_blank" 
+    <a
+      href={resource.link}
+      target="_blank"
       rel="noopener noreferrer"
-      className="bg-white shadow-lg rounded-xl p-6 flex items-start gap-4 transition-shadow hover:shadow-2xl"
+      className="group flex flex-col rounded-2xl border border-forest-100 bg-white p-6 shadow-soft transition-all hover:-translate-y-1 hover:shadow-lift"
     >
-      <div className="flex-shrink-0">
-        {getIcon(resource.type)}
+      <div className="mb-4 flex items-center justify-between">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-forest-800 text-mint-300"><Icon size={20} /></span>
+        <span className="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-semibold text-forest-700">{label}</span>
       </div>
-      <div>
-        <h3 className="text-lg font-semibold text-forest mb-1">{resource.title}</h3>
-        <p className="text-sm text-gray-700">{resource.description}</p>
-        <span className="text-sm text-gold font-medium mt-2 inline-block">
-          Visit Link &rarr;
-        </span>
-      </div>
+      <h3 className="font-display text-lg font-bold text-forest-900">{resource.title}</h3>
+      <p className="mt-1 flex-1 text-sm leading-relaxed text-gray-600">{resource.description}</p>
+      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-buoy-600">
+        Visit <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      </span>
     </a>
   );
 };
 
-
-// --- FIX #1: Replaced C++ code with Java code ---
+// Excerpt from the Aqua Guardian firmware (src/main.cpp). The "..." comment marks where lines are left out.
 const exampleCode = `
-package com.aquaguardian.sensors;
+/**
+ * @brief Main logging loop. Runs for a fixed duration, sampling sensors.
+ */
+void run_logging_window() {
+    Serial.println("\\n--- STARTING LOGGING WINDOW ---");
+    
+    // Calculate total logging duration from config
+    const unsigned long logging_duration_ms = MAX_SAMPLES_PER_SESSION * SENSOR_READ_INTERVAL_MS;
+    unsigned long logging_start_time = millis();
+    unsigned long next_sample_time = logging_start_time;
 
-import java.util.Random;
+    session_data.sample_count = 0;
+
+    while (millis() - logging_start_time < logging_duration_ms) {
+        if (millis() >= next_sample_time) {
+            
+            Serial.printf("Taking sample %d/%d...\\n", session_data.sample_count + 1, MAX_SAMPLES_PER_SESSION);
+            
+            SensorSample sample;
+            sample.time = modem_get_utc_time(); 
+            sensors_read_all(sample); 
+            
+            // --- NEW: HUMIDITY LEAK DETECTION ---
+            // If internal humidity exceeds 85%, assume water ingress
+            if (sample.humidity > 85.0) {
+                session_data.water_leak = true;
+                Serial.println("WARNING: High internal humidity! Flagging water leak.");
+            }
+            
+            // Add sample to the session data
+            if (session_data.sample_count < MAX_SAMPLES_PER_SESSION) {
+                session_data.samples[session_data.sample_count] = sample;
+                session_data.sample_count++;
+            }
+
+            // Schedule next sample
+            next_sample_time += SENSOR_READ_INTERVAL_MS;
+        }
+        // Small delay to prevent busy-looping
+        delay(10); 
+    }
+    // ... (saves the session to a file after the loop)
+}
 
 /**
- * Example Java class for a sensor module.
- * This simulates reading data from a sensor.
+ * @brief Enters deep sleep for the configured duration.
  */
-public class TemperatureSensor {
-
-    private String sensorId;
-    private Random random = new Random();
-
-    public TemperatureSensor(String sensorId) {
-        this.sensorId = sensorId;
-        System.out.println("Sensor " + sensorId + " initialized.");
-    }
-
-    /**
-     * Simulates reading a temperature value.
-     * @return A random temperature reading.
-     */
-    public double readTemperature() {
-        // Simulate a reading between 15.0 and 25.0 C
-        double reading = 15.0 + (10.0 * random.nextDouble());
-        System.out.println("Reading from " + sensorId + ": " + reading + " C");
-        return reading;
-    }
-
-    public static void main(String[] args) {
-        TemperatureSensor waterTemp = new TemperatureSensor("DS18B20");
-        
-        for (int i = 0; i < 5; i++) {
-            waterTemp.readTemperature();
-            try {
-                Thread.sleep(1000); // Wait 1 second
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+void go_to_sleep() {
+    Serial.printf("Entering deep sleep for %d seconds.\\n", DEEP_SLEEP_DURATION_SEC);
+    Serial.flush();
+    
+    // Configure timer wakeup
+    esp_sleep_enable_timer_wakeup(DEEP_SLEEP_DURATION_SEC * 1000000ULL);
+    
+    // Enter deep sleep
+    esp_deep_sleep_start();
 }
 `;
 
-// --- YOUR MAIN PAGE ---
+const onSite = [
+  { href: '/dashboard', icon: Activity, title: 'Data Explorer', text: 'Look at the buoy\'s readings over any time range.' },
+  { href: '/journey', icon: Compass, title: 'Timeline', text: 'Photos and video from the build and deployment.' },
+  { href: '/projects', icon: FolderGit2, title: 'Projects', text: 'Parts lists, CAD and code for what we make.' },
+];
+
 export default function ResourcesPage() {
   return (
-    <PageContainer title="Resources">
+    <div>
+      <PageHero
+        eyebrow="Learn & build"
+        title="Resources"
+        subtitle="Where to find our code, our parts, and the people and organizations we work with."
+        image="/media/photos/aqua-guardian-inside-poster.jpg"
+        imageAlt="Top-down view inside the buoy hull showing the electronics"
+        focus="50% 50%"
+      />
 
-      {/* --- Resource Links Section --- */}
-      <section className="mb-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {RESOURCES_DATA.map(resource => (
-            <ResourceCard key={resource.id} resource={resource} />
-          ))}
-        </div>
-      </section>
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <section className="mb-20">
+          <SectionHeading eyebrow="Elsewhere" title="Links we use every week" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {RESOURCES_DATA.map(resource => <ResourceCard key={resource.id} resource={resource} />)}
+          </div>
+        </section>
 
-      {/* --- Code Snippet Section (FIXED) --- */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-forest mb-4">Example Code</h2>
-        
-        {/* --- FIX #2: Updated title to "Java" --- */}
-        <h3 className="text-lg font-medium text-gray-800 mb-2">
-          Example Sensor Class (Java)
-        </h3>
-        
-        {/* --- FIX #3: Updated language to "java" --- */}
-        <CodeSnippet 
-          language="java"
-          codeString={exampleCode}
-        />
-      </section>
+        <section className="mb-20">
+          <SectionHeading eyebrow="On this site" title="Keep exploring" />
+          <div className="grid gap-5 md:grid-cols-3">
+            {onSite.map((o) => (
+              <a key={o.href} href={o.href} className="group flex items-start gap-4 rounded-2xl bg-forest-800 p-6 text-white shadow-soft transition-all hover:-translate-y-1 hover:bg-forest-700 hover:shadow-lift">
+                <o.icon className="mt-1 shrink-0 text-mint-300" size={24} />
+                <div>
+                  <h3 className="font-display text-lg font-bold">{o.title}</h3>
+                  <p className="mt-1 text-sm text-forest-100">{o.text}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
 
-    </PageContainer>
+        <section className="mb-20">
+          <SectionHeading
+            eyebrow="Firmware"
+            title="A look at the buoy's firmware"
+            subtitle="The buoy runs C++ on an ESP32, built with PlatformIO. This is the logging loop that samples the sensors and checks for a leak, followed by the function that puts the board into deep sleep between cycles."
+          />
+          <CodeSnippet language="cpp" codeString={exampleCode} />
+          <p className="mt-3 text-sm text-gray-500">
+            The full firmware lives in our{' '}
+            <a className="font-semibold text-buoy-600 hover:underline" href="https://github.com/AHSElectronicsClub/atholton-electronics-club" target="_blank" rel="noopener noreferrer">
+              GitHub repository
+            </a>.
+          </p>
+        </section>
+
+        <JoinCTA />
+      </div>
+    </div>
   );
 }

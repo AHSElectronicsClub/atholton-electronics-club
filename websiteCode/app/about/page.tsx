@@ -1,110 +1,186 @@
 'use client';
-import React, { useState } from 'react'; // <-- ADDED useState
-import PageContainer from '../../components/PageContainer';
-import { TEAM_DATA, MENTORS_DATA } from '../../data/db';
+import React, { useState } from 'react';
+import { Wrench, Cpu, Code2, Target, Users, Trophy, Leaf, HeartHandshake } from 'lucide-react';
+import PageHero from '../../components/PageHero';
+import SectionHeading from '../../components/SectionHeading';
+import Button from '../../components/Button';
+import JoinCTA from '../../components/JoinCTA';
+import { Photo } from '../../components/Media';
+import { TEAM_DATA, MENTORS_DATA, MEETING_INFO } from '../../data/db';
 
-// --- In-lined SVG Icon to fix compile errors ---
-// This is the "User" placeholder icon
-const UserIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-  </svg>
-);
+const initials = (name: string) => name.split(' ').map((n) => n[0]).slice(0, 2).join('');
 
-// --- NEW PersonCard component ---
-// This will be used for BOTH students and mentors
-const PersonCard = ({ person }: { person: { name: string, title: string, imageUrl?: string, bio?: string } }) => {
+const PersonCard = ({ person, large = false }: { person: { name: string; title: string; imageUrl?: string; bio?: string }; large?: boolean }) => {
   const [imgFailed, setImgFailed] = useState(false);
   const showPlaceholder = !person.imageUrl || imgFailed;
 
   return (
-    // --- FIX #1: Changed bg-off-white to bg-white shadow-lg ---
-    <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-      <div className="w-32 h-32 rounded-full mb-4 flex items-center justify-center overflow-hidden bg-gray-200">
+    <div className="flex flex-col items-center rounded-2xl border border-forest-100 bg-white p-6 text-center shadow-soft transition-all hover:-translate-y-1 hover:shadow-lift">
+      <div className={`mb-4 overflow-hidden rounded-full bg-forest-100 ring-4 ring-forest-50 ${large ? 'h-36 w-36' : 'h-32 w-32'}`}>
         {showPlaceholder ? (
-          // --- FIX #2: Use the clean SVG placeholder ---
-          <UserIcon className="w-20 h-20 text-gray-400" />
+          <div className="flex h-full w-full items-center justify-center bg-forest-800 font-display text-3xl font-bold text-mint-300">
+            {initials(person.name)}
+          </div>
         ) : (
-          // --- FIX #2: Added onError handler ---
-          <img
-            src={person.imageUrl}
-            alt={person.name}
-            className="w-full h-full object-cover"
-            onError={() => setImgFailed(true)}
-          />
+          <img src={person.imageUrl} alt={person.name} className="h-full w-full object-cover object-top" loading="lazy" onError={() => setImgFailed(true)} />
         )}
       </div>
-      <h3 className="text-xl font-semibold text-forest mb-1">{person.name}</h3>
-      <p className="text-gold font-medium mb-2">{person.title}</p>
-      
-      {/* This will only show up for mentors who have a bio */}
-      {person.bio && (
-        <p className="text-gray-700 text-sm">{person.bio}</p>
-      )}
+      <h3 className="font-display text-xl font-bold text-forest-900">{person.name}</h3>
+      <p className="mt-1 text-sm font-semibold text-buoy-600">{person.title}</p>
+      {person.bio && <p className="mt-3 text-sm leading-relaxed text-gray-600">{person.bio}</p>}
     </div>
   );
 };
 
-// --- YOUR MAIN PAGE ---
+const pillars = [
+  { icon: Wrench, title: 'Mechanical', text: 'CAD, 3D printing, hull design and sealing, solar mounts. For Aqua Guardian this meant a floating ASA hull, A-frame solar panels and a foam stabilizing ring.' },
+  { icon: Cpu, title: 'Electrical', text: 'Sensors, power and wiring: probes, a microcontroller, a cellular modem, a battery with protection circuitry and a solar charge controller.' },
+  { icon: Code2, title: 'Software', text: 'Embedded firmware, a cloud API and database, and the live data card and Data Explorer on this site.' },
+];
+
+const milestones = [
+  { icon: Users, value: '~35', label: 'student members' },
+  { icon: Leaf, value: '2025', label: 'founded at Atholton High' },
+  { icon: Trophy, value: 'Semifinalist', label: 'Samsung Solve for Tomorrow, 2026' },
+  { icon: Target, value: 'Fully Deployed', label: 'Aqua Guardian on Lake Elkhorn' },
+];
+
 export default function AboutPage() {
   return (
-    <PageContainer title="About Us" icon={<span>👋</span>}>
+    <div>
+      <PageHero
+        eyebrow="About us"
+        title="About the club"
+        subtitle="We are a group of Atholton students who build electronics projects together, from circuits and 3D-printed parts to code."
+        image="/media/photos/buoy-launch-2026-11-fall-shoreline.jpg"
+        imageAlt="The orange Aqua Guardian buoy floating on Lake Elkhorn"
+        focus="50% 80%"
+      >
+        <Button href="#team">Meet the team</Button>
+        <Button href="/journey" variant="outline">Our journey</Button>
+      </PageHero>
 
-      {/* Your "Our Story" Section (UNTOUCHED) */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-forest mb-4">Our Story</h2>
-        <p className="text-gray-700 leading-relaxed mb-2">
-          Founded in 2025 at Atholton High School, the Atholton Electronics Club was established to provide students with hands-on experience in electrical engineering and applied technology.
-        </p>
-        <p className="text-gray-700 leading-relaxed">
-          With a growing membership of approximately 35 students, the club focuses on designing and building real-world engineering projects that both educate members and benefit the broader community.
-        </p>
-      </section>
-
-      {/* Your "Our Mission" Section (UNTOUCHED) */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-forest mb-4">Our Mission</h2>
-        <p className="text-gray-700 leading-relaxed">
-          The Atholton Electronics Club is dedicated to providing students with hands-on experience in electronics, programming, and environmental technology. 
-          We build real-world projects, mentor each other, and contribute to our local community through technology and innovation.
-        </p>
-      </section>
-
-      {/* --- Team Members Section (FIXED) --- */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-forest mb-8">Our Team</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {TEAM_DATA.map(member => (
-            // Replaced the old div with the new PersonCard component
-            <PersonCard key={member.id} person={member} />
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        {/* Milestones */}
+        <section className="relative z-10 -mt-24 mb-20 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {milestones.map((m) => (
+            <div key={m.label} className="rounded-2xl border border-forest-100 bg-white p-5 text-center shadow-lift">
+              <m.icon className="mx-auto mb-2 text-forest-500" size={22} />
+              <div className="font-display text-2xl font-extrabold text-forest-800 md:text-3xl">{m.value}</div>
+              <div className="mt-1 text-sm leading-snug text-gray-600">{m.label}</div>
+            </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      {/* --- Mentors Section (FIXED) --- */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-forest mb-8">Our Mentors</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {MENTORS_DATA.map(mentor => (
-            // Replaced the old div with the new PersonCard component
-            <PersonCard key={mentor.id} person={mentor} />
-          ))}
-        </div>
-      </section>
+        {/* Story */}
+        <section className="mb-24 grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <SectionHeading eyebrow="Our story" title="How the club started" />
+            <div className="-mt-4 space-y-4 text-lg leading-relaxed text-gray-700">
+              <p>
+                Founded in 2025 at Atholton High School, the Atholton Electronics Club was established to provide students with hands-on
+                experience in electrical engineering and applied technology.
+              </p>
+              <p>
+                With a growing membership of approximately 35 students, the club focuses on designing and building engineering
+                projects that both educate members and benefit the broader community.
+              </p>
+              <p>
+                Our first big project, <strong className="text-forest-800">Aqua Guardian</strong>, grew out of local water problems like algal blooms and
+                sewage overflows. It is a solar-powered, cellular-connected water-quality buoy, now fully deployed on Lake Elkhorn.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button href="/journey" variant="dark">See the timeline</Button>
+                <Button href="/#live-data" variant="secondary">See the latest reading</Button>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Photo src="/media/photos/buoy-launch-2026-11-dock-prep.jpg" alt="Two club members finishing assembly of the buoy on the dock" caption="Deployment day, Lake Elkhorn" className="col-span-2" imgClassName="aspect-[16/9]" focus="50% 35%" />
+            <Photo src="/media/photos/lake-test-ice-opening.jpg" alt="Club members at an ice opening testing the buoy" caption="Ice test, February 2026" imgClassName="aspect-[4/3]" />
+            <Photo src="/media/photos/aqua-guardian-workbench.jpg" alt="A member sealing the buoy hull at the workbench" caption="Hull work in the lab" imgClassName="aspect-[4/3]" focus="50% 40%" />
+          </div>
+        </section>
 
-      {/* Your "Code of Conduct" Section (UNTOUCHED) */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-forest mb-4">Code of Conduct</h2>
-        <ul className="text-gray-700 list-disc list-inside space-y-2">
-          <li>The Atholton Electronics Club is dedicated to providing a harassment-free experience for everyone, regardless of gender, gender identity, sexual orientation, disability, physical appearance, body size, race, or religion.</li>
-          <li>Be respectful, inclusive, and collaborative.</li>
-          <li>Be mindful of your speech and actions.</li>
-          <li>Respect lab equipment, tools, and shared spaces. Clean up after yourself.</li>
-          <li>Do not tolerate harassment or intimidation in any form.</li>
-          <li>Ask for help, and offer help when you can.</li>
-        </ul>
-      </section>
+        {/* Mission */}
+        <section className="mb-24 overflow-hidden rounded-3xl bg-hero-gradient p-8 text-white shadow-lift md:p-14">
+          <p className="eyebrow !text-mint-300 mb-3">Our goal</p>
+          <p className="max-w-4xl font-display text-2xl font-bold leading-snug md:text-4xl">
+            Give students hands-on experience in electronics, programming and environmental technology.
+          </p>
+          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-forest-100">
+            We build projects together, help each other learn, and look for ways our work can be useful to the local community.
+          </p>
+        </section>
 
-    </PageContainer>
+        {/* What we do */}
+        <section className="mb-24">
+          <SectionHeading eyebrow="How we work" title="Three teams, one project" subtitle="Everyone picks a lane, and the lanes constantly overlap." />
+          <div className="grid gap-5 md:grid-cols-3">
+            {pillars.map((p) => (
+              <div key={p.title} className="rounded-2xl border border-forest-100 bg-white p-6 shadow-soft">
+                <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-forest-800 text-mint-300"><p.icon size={22} /></span>
+                <h3 className="font-display text-xl font-bold text-forest-900">{p.title}</h3>
+                <p className="mt-2 leading-relaxed text-gray-600">{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Team */}
+        <section id="team" className="mb-24 scroll-mt-24">
+          <SectionHeading eyebrow="The people" title="Our team" subtitle="Student leaders across mechanical, electrical, software and outreach." />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {TEAM_DATA.map(member => <PersonCard key={member.id} person={member} />)}
+          </div>
+        </section>
+
+        {/* Mentors */}
+        <section id="mentors" className="mb-24 scroll-mt-24">
+          <SectionHeading eyebrow="Guidance" title="Our mentors" subtitle="Professionals who advise on engineering, software and environmental science." />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {MENTORS_DATA.map(mentor => <PersonCard key={mentor.id} person={mentor} large />)}
+          </div>
+        </section>
+
+        {/* Meet us */}
+        <section className="mb-24 grid items-center gap-8 rounded-3xl border border-forest-100 bg-white p-8 shadow-soft md:grid-cols-3 md:p-10">
+          <div className="md:col-span-2">
+            <p className="eyebrow mb-2">Visit us</p>
+            <h2 className="font-display text-2xl font-bold text-forest-900 md:text-3xl">Drop by a meeting</h2>
+            <p className="mt-3 text-gray-600">We meet {MEETING_INFO.when} in {MEETING_INFO.where}. New members are always welcome.</p>
+          </div>
+          <div className="flex flex-wrap gap-3 md:justify-end">
+            <Button href={MEETING_INFO.calendarLink} target="_blank" variant="dark">Add to calendar</Button>
+            <Button href="/contact" variant="secondary">Contact us</Button>
+          </div>
+        </section>
+
+        {/* Code of Conduct */}
+        <section id="conduct" className="mb-20 scroll-mt-24 rounded-3xl bg-forest-50 p-8 md:p-12">
+          <div className="mb-6 flex items-center gap-3">
+            <HeartHandshake className="text-forest-600" size={28} />
+            <h2 className="font-display text-2xl font-bold text-forest-900 md:text-3xl">Code of Conduct</h2>
+          </div>
+          <ul className="grid gap-3 text-gray-700 md:grid-cols-2">
+            {[
+              'The Atholton Electronics Club is dedicated to providing a harassment-free experience for everyone, regardless of gender, gender identity, sexual orientation, disability, physical appearance, body size, race, or religion.',
+              'Be respectful, inclusive, and collaborative.',
+              'Be mindful of your speech and actions.',
+              'Respect lab equipment, tools, and shared spaces. Clean up after yourself.',
+              'Do not tolerate harassment or intimidation in any form.',
+              'Ask for help, and offer help when you can.',
+            ].map((rule) => (
+              <li key={rule} className="flex items-start gap-3 rounded-xl bg-white p-4 shadow-soft">
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-buoy-500" />
+                <span>{rule}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <JoinCTA />
+      </div>
+    </div>
   );
 }

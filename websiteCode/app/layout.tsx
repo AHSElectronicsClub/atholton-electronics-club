@@ -1,33 +1,23 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
-import Header from '../components/Header'; // Adjusted path
-import Footer from '../components/Footer'; // Adjusted path
-
-const inter = Inter({ subsets: ['latin'] });
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Atholton Electronics Club',
-  description: 'Engineering solutions for our community.',
+  title: {
+    default: 'Atholton Electronics Club | Aqua Guardian water-quality buoy',
+    template: '%s | Atholton Electronics Club',
+  },
+  description:
+    'Atholton High School students building electronics projects. Our solar-powered Aqua Guardian buoy is deployed on Lake Elkhorn and sends water-quality readings online.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      {/*
-        --- THIS IS THE FIX ---
-        I've added your 'bg-page-gradient' and 'min-h-screen' here
-        to apply it to every page on the site.
-      */}
-      <body className={`${inter.className} bg-page-gradient min-h-screen`}>
+      <body className="bg-cream min-h-screen flex flex-col font-sans text-gray-800">
         <Header />
-        <main>
-          {children}
-        </main>
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

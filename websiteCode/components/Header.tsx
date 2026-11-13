@@ -1,106 +1,144 @@
 'use client';
 import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Activity } from 'lucide-react';
 
-// --- INLINED COMPONENTS TO FIX ERRORS ---
-const Button = ({ href, target, variant, className, children }: any) => {
-  let styles = "inline-block rounded-lg font-medium text-center transition-colors duration-200 ";
-  if (variant === 'primary') {
-    styles += "bg-gold text-forest hover:bg-gold/80";
-  } else {
-    styles += "bg-gray-200 text-gray-900 hover:bg-gray-300";
-  }
-  return (
-    <a href={href} target={target} className={`${styles} ${className}`}>
-      {children}
-    </a>
-  );
-};
-const MenuIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-  </svg>
-);
-const XIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-// --- END OF INLINED COMPONENTS ---
+const GROUPME = 'https://groupme.com/join_group/110257950/WJX63DOF';
+
+const NAV = [
+  { name: 'Home', href: '/' },
+  { name: 'Journey', href: '/journey' },
+  { name: 'Projects', href: '/projects' },
+  { name: 'About', href: '/about' },
+  { name: 'Resources', href: '/resources' },
+  { name: 'Contact', href: '/contact' },
+];
 
 export default function Header() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  
-  // --- UPDATED NAVIGATION LIST ---
-  const nav = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Projects', href: '/projects' },
-    { name: 'Dashboard', href: '/dashboard' }, // <--- ADDED THIS LINK
-    { name: 'Resources', href: '/resources' },
-    { name: 'Contact', href: '/contact' }
-  ];
-  
-  const groupme = "https://groupme.com/join_group/110257950/WJX63DOF";
-  
-  return (
-    <nav className="bg-hero-gradient sticky top-0 z-40 shadow-lg border-b border-gold/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          
-          <div className="flex-shrink-0 flex items-center cursor-pointer">
-            {/* --- THIS IS THE LOGO PATH --- */}
-            {/* It MUST be at websiteCode/public/logo.png */}
-            <a href="/">
-              <img 
-                src="/logo.png" 
-                alt="Atholton Electronics Club Logo" 
-                width={40} 
-                height={40} 
-                className="w-10 h-10 inline-block" 
-              />
-              <span className="text-white text-xl font-bold font-display ml-3 hidden sm:inline-block">Atholton Electronics Club</span>
-              <span className="text-white text-lg font-bold font-display ml-3 sm:hidden">AEC</span>
-            </a>
-          </div>
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname() || '/';
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+  const dashActive = isActive('/dashboard');
 
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {nav.map(item => (
-                <a 
-                  key={item.href} 
-                  href={item.href} 
-                  className="px-3 py-2 rounded-md text-base font-medium text-white hover:text-gold transition-colors duration-200"
+  const DashboardLink = ({ mobile = false }: { mobile?: boolean }) => (
+    <Link
+      href="/dashboard"
+      onClick={() => setOpen(false)}
+      className={`group relative inline-flex items-center gap-2 rounded-full font-semibold transition-all duration-200 ${
+        mobile ? 'w-full justify-center px-4 py-3 text-base' : 'px-4 py-2 text-sm'
+      } ${
+        dashActive
+          ? 'bg-white text-forest-900 shadow-glow'
+          : 'bg-buoy-500 text-white shadow-md hover:bg-buoy-600 hover:-translate-y-0.5'
+      }`}
+    >
+      <Activity size={16} />
+      Data Explorer
+    </Link>
+  );
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-forest-950/95 backdrop-blur supports-[backdrop-filter]:bg-forest-950/85">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="Atholton Electronics Club home">
+          <img src="/logo.png" alt="" width={44} height={44} className="h-11 w-11 rounded-full ring-2 ring-white/10" />
+          <span className="hidden font-display text-lg font-bold leading-tight text-white sm:block">
+            Atholton
+            <span className="block text-xs font-medium uppercase tracking-[0.2em] text-mint-300">Electronics Club</span>
+          </span>
+          <span className="font-display text-lg font-bold text-white sm:hidden">AEC</span>
+        </Link>
+
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+          {NAV.slice(0, 3).map((item) => (
+            <NavLink key={item.href} item={item} active={isActive(item.href)} />
+          ))}
+          <div className="mx-2">
+            <DashboardLink />
+          </div>
+          {NAV.slice(3).map((item) => (
+            <NavLink key={item.href} item={item} active={isActive(item.href)} />
+          ))}
+        </nav>
+
+        <div className="hidden lg:block">
+          <a
+            href={GROUPME}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
+          >
+            Join the Club
+          </a>
+        </div>
+
+        <div className="flex items-center gap-2 lg:hidden">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 rounded-full bg-buoy-500 px-3.5 py-2 text-sm font-semibold text-white"
+          >
+            <Activity size={14} />
+            Data Explorer
+          </Link>
+          <button
+            onClick={() => setOpen(!open)}
+            className="inline-flex items-center justify-center rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white"
+            aria-expanded={open}
+            aria-label="Toggle main menu"
+          >
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <div className="border-t border-white/10 bg-forest-950 lg:hidden">
+          <div className="space-y-1 px-4 py-4">
+            <DashboardLink mobile />
+            <div className="pt-2">
+              {NAV.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={`block rounded-lg px-3 py-3 text-base font-medium ${
+                    isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/75 hover:bg-white/5 hover:text-white'
+                  }`}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
-              <Button href={groupme} target="_blank" variant="primary" className="ml-4 !py-2 !px-4">Join the Club</Button>
+              <a
+                href={GROUPME}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 block rounded-lg border border-white/25 px-3 py-3 text-center font-semibold text-white"
+              >
+                Join the Club
+              </a>
             </div>
           </div>
-
-          <div className="md:hidden flex items-center">
-            <Button href={groupme} target="_blank" variant="primary" className="mr-2 !py-2 !px-4">Join</Button>
-            <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-forest-light">
-              <span className="sr-only">Open main menu</span>
-              {isMobileOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
-            </button>
-          </div>
         </div>
-      </div>
+      )}
+    </header>
+  );
+}
 
-      <div className={`${isMobileOpen ? 'block' : 'hidden'} md:hidden border-t border-gray-700`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {nav.map(item => (
-            <a 
-              key={item.href} 
-              href={item.href} 
-              className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gold transition-colors duration-200"
-            >
-              {item.name}
-            </a>
-          ))}
-        </div>
-      </div>
-    </nav>
+function NavLink({ item, active }: { item: { name: string; href: string }; active: boolean }) {
+  return (
+    <Link
+      href={item.href}
+      className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+        active ? 'text-white' : 'text-white/70 hover:text-white'
+      }`}
+    >
+      {item.name}
+      <span
+        className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-mint-400 transition-opacity ${
+          active ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </Link>
   );
 }

@@ -41,10 +41,10 @@ We believe that building a high-impact, open-source technology is a direct way t
     repoLink: 'https://github.com/AHSElectronicsClub/atholton-electronics-club',
     pdfLink: '#',
     youtubeId: null,
-    status: 'Deployed on Lake Elkhorn since Nov 11, 2026',
+    status: 'Fully deployed on Lake Elkhorn',
     links: [
-      { label: 'Live dashboard', href: '/dashboard' },
-      { label: 'Our build journey', href: '/journey' },
+      { label: 'Data Explorer', href: '/dashboard' },
+      { label: 'Project timeline', href: '/journey' },
       { label: 'Build journal', href: 'https://spfmakerclub.wordpress.com/aqua-guardian-ahs-electronics-club/', external: true },
       { label: 'View in 3D', href: 'https://a360.co/4sSlGQV', external: true }
     ]
@@ -78,7 +78,7 @@ export const TEAM_DATA: TeamMember[] = [
 // I have added the "Sierra Club" link back to your resources list.
 export const RESOURCES_DATA = [
   { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects: Aqua Guardian firmware, server code, this website and our project documents.', link: 'https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
-  { id: 2, title: 'Aqua Guardian Build Journal', description: 'Photo-heavy write-up of how the buoy was designed, built, tested through the ice and launched.', link: 'https://spfmakerclub.wordpress.com/aqua-guardian-ahs-electronics-club/', type: 'link' },
+  { id: 2, title: 'Aqua Guardian Build Journal', description: 'Photo-heavy write-up of how the buoy was designed, built, tested through the ice and deployed.', link: 'https://spfmakerclub.wordpress.com/aqua-guardian-ahs-electronics-club/', type: 'link' },
   { id: 3, title: 'Buoy in 3D', description: 'Spin the full CAD model of the buoy in your browser.', link: 'https://a360.co/4sSlGQV', type: 'link' },
   { id: 101, title: 'DFRobot', description: 'Our primary parts supplier: the Gravity probes, FireBeetle ESP32 and expansion boards.', link: 'https://www.dfrobot.com/', type: 'supplier' },
   { id: 4, title: 'Samsung Solve for Tomorrow', description: 'The national STEM competition where Aqua Guardian made the semifinals.', link: 'https://www.samsung.com/us/solvefortomorrow/', type: 'link' },

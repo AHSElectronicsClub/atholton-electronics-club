@@ -33,9 +33,9 @@ export default function ContactPage() {
         eyebrow="Get in touch"
         title="Come say hi"
         subtitle="New students, potential mentors and community partners are all welcome. Ask a question, propose a collaboration, or just come to a meeting."
-        image="/media/photos/electronics-team-bench.jpg"
-        imageAlt="Club members at the electronics bench"
-        focus="50% 45%"
+        image="/media/photos/buoy-launch-2026-11-dock-prep.jpg"
+        imageAlt="Two club members assembling the buoy on a dock"
+        focus="50% 40%"
       >
         <Button href={GROUPME} target="_blank">Join the GroupMe</Button>
       </PageHero>

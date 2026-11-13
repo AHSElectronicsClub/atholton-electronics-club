@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: '%s | Atholton Electronics Club',
   },
   description:
-    'Student engineers at Atholton High School building real-world electronics. Our solar-powered Aqua Guardian buoy is live on Lake Elkhorn, streaming water-quality data.',
+    'Atholton High School students building electronics projects. Our solar-powered Aqua Guardian buoy is deployed on Lake Elkhorn and sends water-quality readings online.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

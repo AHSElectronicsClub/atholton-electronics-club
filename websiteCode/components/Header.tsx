@@ -33,12 +33,8 @@ export default function Header() {
           : 'bg-buoy-500 text-white shadow-md hover:bg-buoy-600 hover:-translate-y-0.5'
       }`}
     >
-      <span className="relative flex h-2.5 w-2.5">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-75" />
-        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-mint-400 ring-2 ring-white/60" />
-      </span>
       <Activity size={16} />
-      Live Dashboard
+      Data Explorer
     </Link>
   );
 
@@ -82,8 +78,8 @@ export default function Header() {
             href="/dashboard"
             className="inline-flex items-center gap-1.5 rounded-full bg-buoy-500 px-3.5 py-2 text-sm font-semibold text-white"
           >
-            <span className="h-2 w-2 rounded-full bg-mint-400 animate-pulse" />
-            Dashboard
+            <Activity size={14} />
+            Data Explorer
           </Link>
           <button
             onClick={() => setOpen(!open)}

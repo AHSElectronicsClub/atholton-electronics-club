@@ -15,8 +15,8 @@ export default function Footer() {
               <span className="font-display text-xl font-bold text-white">Atholton Electronics Club</span>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-forest-200">
-              Student engineers at Atholton High School designing, building and deploying real-world electronics, from CAD to a
-              solar-powered buoy floating on Lake Elkhorn.
+              Student engineers at Atholton High School designing and building electronics projects, from CAD to a
+              solar-powered buoy on Lake Elkhorn.
             </p>
             <div className="flex flex-wrap gap-3 pt-1">
               <a
@@ -41,7 +41,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-mint-300">Explore</h4>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/dashboard" className="font-semibold text-buoy-300 hover:text-buoy-400">Live Dashboard</Link></li>
+              <li><Link href="/dashboard" className="font-semibold text-buoy-300 hover:text-buoy-400">Data Explorer</Link></li>
               <li><Link href="/journey" className="hover:text-white">Our Journey</Link></li>
               <li><Link href="/projects" className="hover:text-white">Projects</Link></li>
               <li><Link href="/about" className="hover:text-white">About Us</Link></li>

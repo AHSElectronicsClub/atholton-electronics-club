@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { ArrowRight, Lightbulb, Radio, Sun, Thermometer } from 'lucide-react';
+import { ArrowRight, Radio, Sun, Thermometer, Waves } from 'lucide-react';
 import PageHero from '../../components/PageHero';
 import Button from '../../components/Button';
 import SectionHeading from '../../components/SectionHeading';
@@ -11,7 +11,7 @@ import type { JourneyMedia } from '../../data/journey';
 
 export const metadata: Metadata = {
   title: 'Our Journey',
-  description: 'How a student team designed, built, ice-tested and launched the Aqua Guardian water-quality buoy.',
+  description: 'How the Aqua Guardian water-quality buoy was designed, built, tested and deployed.',
 };
 
 function MediaItem({ m }: { m: JourneyMedia }) {
@@ -20,26 +20,26 @@ function MediaItem({ m }: { m: JourneyMedia }) {
   return <Embed provider="vimeo" id={m.id} title={m.title} caption={m.caption} />;
 }
 
-const lessons = [
-  {
-    icon: Radio,
-    title: 'The antenna mount was hurting the signal',
-    text: 'A teammate learning heat simulations noticed our mount was working against the cellular antenna. We redesigned it together, and the buoy has been phoning home ever since.',
-  },
+const highlights = [
   {
     icon: Sun,
-    title: 'Shape matters on open water',
-    text: 'Steep A-frame solar panels keep the batteries charging as the buoy swings on its anchor, and a foam ring at the waterline keeps it upright in the wind.',
+    title: 'Solar and self-sufficient',
+    text: 'A tilted A-frame panel and a protected battery pack let the buoy run on sunlight, waking only to measure and report.',
   },
   {
-    icon: Lightbulb,
-    title: 'A quiet buoy is not a broken buoy',
-    text: 'After launch nothing uploaded for hours. We think the battery was low when it went in and simply needed morning sun. By the next day data was flowing.',
+    icon: Waves,
+    title: 'Built to float steadily',
+    text: 'A foam ring at the waterline and an anchored mooring keep the buoy level, and the ASA hull is epoxy-sealed against water.',
+  },
+  {
+    icon: Radio,
+    title: 'Data from anywhere',
+    text: 'A cellular and GPS modem sends every batch of readings, plus the buoy\'s position, straight to our cloud service.',
   },
   {
     icon: Thermometer,
-    title: 'Humidity can look like a leak',
-    text: 'Our leak alert is driven by a humidity sensor inside the hull. It fired on day one while the buoy floated perfectly normally, so we treat it as a flag to check, not proof.',
+    title: 'Watching its own health',
+    text: 'Internal leak, temperature and humidity sensors keep an eye on the electronics enclosure alongside the six water probes.',
   },
 ];
 
@@ -47,15 +47,15 @@ export default function JourneyPage() {
   return (
     <div>
       <PageHero
-        eyebrow="Our journey"
-        title="From a headline to a buoy on the lake"
-        subtitle="A year of CAD, soldering, late nights and one very cold February. Here is how Aqua Guardian came together, in photos and video."
+        eyebrow="Project timeline"
+        title="Building Aqua Guardian"
+        subtitle="The design, the build, the testing and the deployment, in photos and video."
         image="/media/photos/buoy-launch-2026-11-wide.jpg"
         imageAlt="The orange buoy as a small dot on Lake Elkhorn"
         focus="50% 60%"
         size="lg"
       >
-        <Button href="/dashboard">Watch it live <ArrowRight size={16} /></Button>
+        <Button href="/#live-data">See the latest reading <ArrowRight size={16} /></Button>
         <Button href="#timeline" variant="outline">Jump to the timeline</Button>
       </PageHero>
 
@@ -73,7 +73,7 @@ export default function JourneyPage() {
 
       {/* Timeline */}
       <section id="timeline" className="mx-auto mt-24 max-w-6xl scroll-mt-24 px-4 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Timeline" title="How it came together" />
+        <SectionHeading eyebrow="Timeline" title="Step by step" />
         <ol className="relative space-y-16 border-l-2 border-forest-200 pl-8 md:pl-12">
           {JOURNEY.map((step, idx) => {
             const isLast = idx === JOURNEY.length - 1;
@@ -100,7 +100,7 @@ export default function JourneyPage() {
                 )}
                 {step.id === 'now' && (
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <Button href="/dashboard">Open the live dashboard <ArrowRight size={16} /></Button>
+                    <Button href="/dashboard">Open the Data Explorer <ArrowRight size={16} /></Button>
                     <Button href="https://spfmakerclub.wordpress.com/aqua-guardian-ahs-electronics-club/" target="_blank" variant="secondary">
                       Read the full build journal
                     </Button>
@@ -115,12 +115,12 @@ export default function JourneyPage() {
       {/* Lessons */}
       <section className="mx-auto mt-28 max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="What we learned"
-          title="Things that went sideways (and how we fixed them)"
-          subtitle="Real engineering is mostly debugging. These are the moments that taught us the most."
+          eyebrow="Design notes"
+          title="How it is put together"
+          subtitle="A few of the engineering choices behind a buoy that runs on its own."
         />
         <div className="grid gap-5 md:grid-cols-2">
-          {lessons.map((l) => (
+          {highlights.map((l) => (
             <div key={l.title} className="flex gap-4 rounded-2xl border border-forest-100 bg-white p-6 shadow-soft">
               <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-forest-800 text-mint-300">
                 <l.icon size={22} />

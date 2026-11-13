@@ -174,3 +174,9 @@
   .api-form { grid-template-columns: 1fr; }
   .dash-hero-inner { padding: 44px 20px 52px; }
 }
+
+/* Per-sensor calibration flags in the sensor guide */
+.sensor-flag { display: inline-block; margin: 8px 0 4px; padding: 2px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; }
+.flag-ok { background: #DDEBE2; color: #1D4230; }
+.flag-bad { background: #e5e7eb; color: #4b5563; }
+.dash-lede a { color: #9BE3BC; text-decoration: underline; }

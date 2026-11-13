@@ -1,4 +1,4 @@
-import type { Project, Mentor, TeamMember, Event } from './types';
+import type { Project, Mentor, TeamMember } from './types';
 
 export const PROJECTS_DATA: Project[] = [
   {
@@ -30,44 +30,59 @@ We believe that building a high-impact, open-source technology is a direct way t
       'Waterproof Buoy Enclosure & Mounting Hardware printed from ASA'
     ],
     images: [
+      '/media/photos/buoy-launch-2026-11-fall-shoreline.jpg',
+      '/media/photos/buoy-launch-2026-11-dock-prep.jpg',
+      '/media/photos/aqua-guardian-workbench.jpg',
+      '/media/photos/aqua-guardian-inside-poster.jpg',
       '/images/buoyCAD.jpg',
-      '/images/sensor-array.jpg',
-      '/images/lake-deployment.jpg'
+      '/media/photos/lake-test-ice-opening.jpg',
+      '/media/photos/buoy-launch-2026-11-close.jpg'
     ],
-    repoLink: 'https://github.com/atholton-e-club/aqua-guardian',
+    repoLink: 'https://github.com/AHSElectronicsClub/atholton-electronics-club',
     pdfLink: '#',
-    youtubeId: null
+    youtubeId: null,
+    status: 'Deployed on Lake Elkhorn since Nov 11, 2026',
+    links: [
+      { label: 'Live dashboard', href: '/dashboard' },
+      { label: 'Our build journey', href: '/journey' },
+      { label: 'Build journal', href: 'https://spfmakerclub.wordpress.com/aqua-guardian-ahs-electronics-club/', external: true },
+      { label: 'View in 3D', href: 'https://a360.co/4sSlGQV', external: true }
+    ]
   }
 ];
 
 export const ALL_TAGS = Array.from(new Set(PROJECTS_DATA.flatMap(p => p.tags))).sort();
 
-export const EVENTS_DATA: Event[] = [
-  { id: 1, title: 'Weekly Meeting & Open Lab', date: 'Every Wednesday', time: '2:40 PM – 3:40 PM', location: 'Room E172 (The "Makerspace")', description: "Our regular weekly meeting...", organizer: 'Dr. Evelyn Reed', contact: 'ereed@atholton.edu', calendarLink: 'https://calendar.app.google/u5trzue6ms8Tbqq79' },
-  { id: 2, title: 'Workshop: Intro to Soldering', date: 'Friday, November 14, 2025', time: '4:00 PM – 6:00 PM', location: 'Electronics Bench (Room E172)', description: 'Learn through-hole soldering...', organizer: 'Jane Doe', contact: 'jane.doe@student.atholton.edu', calendarLink: 'https://calendar.app.google/qRb3MeRJ4EHVdV949' },
-  { id: 3, title: 'Guest Speaker: Chesapeake Bay Foundation', date: 'Tuesday, November 25, 2025', time: '1:00 PM (Lunch Period)', location: 'Auditorium', description: 'A field researcher will discuss water quality monitoring', organizer: 'Dr. Evelyn Reed', contact: 'ereed@atholton.edu', calendarLink: 'https://calendar.app.google/cF5yJi5a45Xdn7xc8' }
-];
+// Our regular meeting time (the old dated event list was removed because it was out of date).
+export const MEETING_INFO = {
+  when: 'Wednesdays, 2:40 PM – 3:40 PM',
+  where: 'Room E172 (the makerspace), Atholton High School',
+  calendarLink: 'https://calendar.app.google/u5trzue6ms8Tbqq79',
+};
 
 export const MENTORS_DATA: Mentor[] = [
-  { id: 1, name: 'Arif Khan', title: 'Mentor / Software Engineer', bio: 'Arif is a software engineer at Dundics Enterprises with experience in multiple programming languages (Python, C++, C Sharp). He specializes in distributed computing architectures and expiremental research.', officeHours: 'By Appointment', imageUrl: '/images/arif-khan.jpg' },
+  { id: 1, name: 'Arif Khan', title: 'Mentor / Software Engineer', bio: 'Arif is a software engineer at Dundics Enterprises with experience in multiple programming languages (Python, C++, C Sharp). He specializes in distributed computing architectures and experimental research.', officeHours: 'By Appointment', imageUrl: '' },
   { id: 2, name: 'Radhika Wijetunge', title: 'Project Manager, Stormwater Management Division', bio: "Radhika is a Project Manager with the Stormwater Management Division of Howard County's Department of Public Works' Bureau of Environmental Services. A civil engineer with degrees from Princeton and Yale, graduate work at MIT, and expertise in computer mapping and modeling.", officeHours: 'By Appointment', imageUrl: '/images/radhika.jpg' }
 ];
 
 export const TEAM_DATA: TeamMember[] = [
-  { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead / Software Team Co-Lead', imageUrl: '/images/anwar.jpg' },
-  { id: 2, name: 'Austen Shaheen', title: 'President / Electrical Team Lead', imageUrl: '/images/austen.jpg' },
-  { id: 3, name: 'Shalin Vakil', title: 'Vice President / Software Team Co-Lead', imageUrl: '/images/shalin.jpg' },
+  { id: 1, name: 'Anwar Khan', title: 'President / Mechanical Team Lead / Software Team Lead', imageUrl: '/images/anwar.jpg' },
+  { id: 2, name: 'Austen Shaheen', title: 'President / Electrical Team Lead / Outreach', imageUrl: '/images/austen.jpg' },
+  { id: 3, name: 'Shalin Vakil', title: 'Vice President / Software Team Lead', imageUrl: '/images/shalin.jpg' },
   { id: 4, name: 'Ayaan Kalra', title: 'Software Team Co-Lead / Outreach', imageUrl: '/images/ayaan.jpg' },
   { id: 5, name: 'Timothy Ward', title: 'Mechanical Team Co-Lead', imageUrl: '/images/timothy.jpg' },
-  { id: 6, name: 'Simarpreet Arri', title: 'Electrical Team Co-Lead', imageUrl: '/images/simar.jpg' }, 
+  { id: 6, name: 'Simarpreet Arri', title: 'Vice President / Electrical Team Co-Lead', imageUrl: '/images/simar.jpg' }, 
 ];
 
 // --- THIS IS THE FIX ---
 // I have added the "Sierra Club" link back to your resources list.
 export const RESOURCES_DATA = [
-  { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects...', link: 'https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
-  { id: 101, title: 'DFRobot', description: 'Our primary parts supplier.', link: 'https://www.dfrobot.com/', type: 'supplier' },
-  { id: 2, title: 'Sierra Club (Maryland)', description: 'Local environmental advocacy and partner organization.', link: 'https://www.sierraclub.org/maryland', type: 'link' },
+  { id: 1, title: 'Club GitHub Organization', description: 'All our open-source projects: Aqua Guardian firmware, server code, this website and our project documents.', link: 'https://github.com/AHSElectronicsClub/atholton-electronics-club', type: 'code' },
+  { id: 2, title: 'Aqua Guardian Build Journal', description: 'Photo-heavy write-up of how the buoy was designed, built, tested through the ice and launched.', link: 'https://spfmakerclub.wordpress.com/aqua-guardian-ahs-electronics-club/', type: 'link' },
+  { id: 3, title: 'Buoy in 3D', description: 'Spin the full CAD model of the buoy in your browser.', link: 'https://a360.co/4sSlGQV', type: 'link' },
+  { id: 101, title: 'DFRobot', description: 'Our primary parts supplier: the Gravity probes, FireBeetle ESP32 and expansion boards.', link: 'https://www.dfrobot.com/', type: 'supplier' },
+  { id: 4, title: 'Samsung Solve for Tomorrow', description: 'The national STEM competition where Aqua Guardian made the semifinals.', link: 'https://www.samsung.com/us/solvefortomorrow/', type: 'link' },
+  { id: 5, title: 'Sierra Club (Maryland)', description: 'Local environmental advocacy and partner organization.', link: 'https://www.sierraclub.org/maryland', type: 'link' },
   //{ id: 3, title: 'Soldering 101 Cheatsheet', description: 'A printable 1-page PDF guide.', link: '#', type: 'cheatsheet' }
 ];
 

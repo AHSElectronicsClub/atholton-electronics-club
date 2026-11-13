@@ -1,13 +1,16 @@
 import React from 'react';
 
-export default function PageContainer({ title, icon, children }: { title: string, icon?: React.ReactNode, children: React.ReactNode }) {
+/** Simple titled content wrapper. Pages with a photo hero use <PageHero /> instead. */
+export default function PageContainer({ title, icon, children }: { title?: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-      <div className="mb-8">
-        <h1 className="text-5xl font-bold font-display tracking-tight text-forest">{title}</h1>
-      </div>
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      {title && (
+        <div className="mb-8 flex items-center gap-3">
+          {icon}
+          <h1 className="font-display text-4xl font-bold tracking-tight text-forest-900 md:text-5xl">{title}</h1>
+        </div>
+      )}
       {children}
     </div>
   );
 }
-

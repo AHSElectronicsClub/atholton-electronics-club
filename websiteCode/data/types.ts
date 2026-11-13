@@ -10,6 +10,8 @@ export type Project = {
   repoLink: string;
   pdfLink: string;
   youtubeId?: string | null;
+  status?: string;
+  links?: { label: string; href: string; external?: boolean }[];
 };
 
 export type Mentor = {

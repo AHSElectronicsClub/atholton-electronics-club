@@ -1,114 +1,113 @@
-import React, { useState } from 'react'; // <-- ADDED useState
+import React, { useState } from 'react';
+import { ExternalLink, ArrowRight, Cpu } from 'lucide-react';
+import { Github } from './BrandIcons';
 
-// --- In-lined SVG Icon to fix compile errors ---
-const XIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-// Added this placeholder icon
-const ImageOffIcon = ({ className }: { className: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-     <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18" />
-  </svg>
-);
-
-// Define the props
 type ProjectModalContentProps = {
   project: {
     id: number;
     title: string;
     description: string;
     tags: string[];
-    // --- FIX #1: Changed 'imageUrl' to 'images' array ---
-    images?: string[]; 
-    repoUrl?: string; // This is the old 'repoLink'
+    images?: string[];
+    repoUrl?: string;
+    repoLink?: string;
+    partsList?: string[];
+    status?: string;
+    links?: { label: string; href: string; external?: boolean }[];
   };
   onClose: () => void;
 };
 
 export default function ProjectModalContent({ project, onClose }: ProjectModalContentProps) {
-  // --- ADDED THIS STATE FOR IMAGE FALLBACK ---
-  const [imgFailed, setImgFailed] = useState(false);
-  
-  // Get the first image from the array
-  const firstImage = project.images?.[0];
-  const showPlaceholder = !firstImage || imgFailed;
+  const images = (project.images || []).filter(Boolean);
+  const [active, setActive] = useState(0);
+  const [failed, setFailed] = useState<Record<number, boolean>>({});
+  const repo = project.repoUrl || project.repoLink;
 
   return (
-    // Main modal content panel
-    <div className="bg-white rounded-xl overflow-hidden max-w-2xl w-full">
-      
-      {/* --- FIX #2: Updated image logic --- */}
-      {/* Image Header / Placeholder */}
-      <div className="h-64 bg-gray-700 flex items-center justify-center">
-        {showPlaceholder ? (
-          <ImageOffIcon className="w-32 h-32 text-gray-500" />
-        ) : (
-          <img 
-            src={firstImage} 
-            alt={project.title} 
-            className="w-full h-full object-cover" 
-            onError={() => setImgFailed(true)}
-          />
-        )}
-      </div>
+    <div className="w-full">
+      {/* Gallery */}
+      {images.length > 0 && (
+        <div className="bg-forest-950">
+          <div className="aspect-[16/9] w-full overflow-hidden">
+            {failed[active] ? (
+              <div className="flex h-full items-center justify-center text-forest-400">Image unavailable</div>
+            ) : (
+              <img
+                src={images[active]}
+                alt={`${project.title}, photo ${active + 1}`}
+                className="h-full w-full object-cover"
+                onError={() => setFailed((f) => ({ ...f, [active]: true }))}
+              />
+            )}
+          </div>
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto px-4 py-3">
+              {images.map((src, i) => (
+                <button
+                  key={src}
+                  onClick={() => setActive(i)}
+                  className={`h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${i === active ? 'border-buoy-500' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                  aria-label={`Show photo ${i + 1}`}
+                >
+                  <img src={src} alt="" className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Close Button (top right) */}
-      <button 
-        onClick={onClose}
-        className="absolute top-4 right-4 text-white bg-black/30 rounded-full p-1 transition-colors hover:bg-black/50"
-      >
-        <XIcon className="w-6 h-6" />
-        <span className="sr-only">Close modal</span>
-      </button>
-      
-      {/* Content Padding */}
-      <div className="p-8">
-        
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.tags.map(tag => (
-            <span 
-              key={tag} 
-              className="text-xs font-semibold text-gold bg-gold/10 px-2 py-0.5 rounded-full"
-            >
-              {tag}
+      <div className="p-6 sm:p-10">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {project.status && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-800 px-3 py-1 text-xs font-semibold text-mint-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint-400" /> {project.status}
             </span>
+          )}
+          {project.tags.slice(0, 6).map((tag) => (
+            <span key={tag} className="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-semibold text-forest-700">{tag}</span>
           ))}
         </div>
-        
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-forest mb-4">
-          {project.title}
-        </h2>
-        
-        {/* Full Description */}
-        <div className="text-base text-gray-700 space-y-4">
-          {project.description.split('\n').map((paragraph, index) => (
+
+        <h2 className="font-display text-3xl font-bold text-forest-900 sm:text-4xl">{project.title}</h2>
+
+        <div className="mt-5 space-y-4 text-base leading-relaxed text-gray-700">
+          {project.description.split('\n').filter((p) => p.trim()).map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
 
-        {/* Links Footer */}
-        <div className="border-t border-gray-200 mt-6 pt-6 flex gap-4">
-          <button
-            onClick={onClose}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-          >
-            Close
-          </button>
-          {project.repoUrl && (
-            <a 
-              href={project.repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gold text-forest hover:bg-gold/80 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+        {project.partsList && project.partsList.length > 0 && (
+          <div className="mt-8 rounded-2xl bg-forest-50 p-5">
+            <h3 className="mb-3 flex items-center gap-2 font-display text-lg font-bold text-forest-900"><Cpu size={18} /> What&apos;s inside</h3>
+            <ul className="grid gap-x-6 gap-y-1.5 text-sm text-gray-700 sm:grid-cols-2">
+              {project.partsList.map((part) => (
+                <li key={part} className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-forest-500" />{part}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="mt-8 flex flex-wrap gap-3 border-t border-forest-100 pt-6">
+          {(project.links || []).map((l, i) => (
+            <a
+              key={l.href}
+              href={l.href}
+              {...(l.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+                i === 0 ? 'bg-buoy-500 text-white hover:bg-buoy-600' : 'bg-forest-100 text-forest-800 hover:bg-forest-200'
+              }`}
             >
-              View Repo
+              {l.label} {l.external ? <ExternalLink size={14} /> : <ArrowRight size={14} />}
+            </a>
+          ))}
+          {repo && (
+            <a href={repo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-forest-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-forest-800">
+              <Github size={16} /> View the code
             </a>
           )}
+          <button onClick={onClose} className="ml-auto rounded-full px-4 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100">Close</button>
         </div>
       </div>
     </div>

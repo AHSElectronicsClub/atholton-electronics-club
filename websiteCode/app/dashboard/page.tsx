@@ -223,12 +223,12 @@ export default function DashboardPage() {
   };
 
   const sensorGuide = [
-    { name: 'Temp', unit: '°C', what: 'Water temperature', tip: 'Warm water holds less oxygen and encourages algae. Sudden swings are unusual.' },
-    { name: 'pH', unit: '', what: 'How acidic or basic the water is', tip: 'Most healthy lakes sit between about 6.5 and 8.5. Algae blooms can push pH up.' },
-    { name: 'DO', unit: 'mg/L', what: 'Dissolved oxygen', tip: 'What fish and other aquatic life breathe. Values below about 5 mg/L can stress them.' },
-    { name: 'EC', unit: 'µS/cm', what: 'Electrical conductivity', tip: 'A proxy for dissolved salts and minerals. Jumps after rain or road-salt runoff are worth noticing.' },
-    { name: 'Turbidity', unit: 'NTU', what: 'Water clarity', tip: 'Higher means cloudier, from sediment stirred up by storms or from algae.' },
-    { name: 'ORP', unit: 'mV', what: 'Oxidation-reduction potential', tip: 'Sustained low values alongside low oxygen can point to decaying organic matter such as sewage.' },
+    { name: 'Temp', ok: true, unit: '°C', what: 'Water temperature', tip: 'Warm water holds less oxygen and encourages algae. Sudden swings are unusual.' },
+    { name: 'pH', ok: false, unit: '', what: 'How acidic or basic the water is', tip: 'Most healthy lakes sit between about 6.5 and 8.5. Algae blooms can push pH up.' },
+    { name: 'DO', ok: false, unit: 'mg/L', what: 'Dissolved oxygen', tip: 'What fish and other aquatic life breathe. Values below about 5 mg/L can stress them.' },
+    { name: 'EC', ok: true, unit: 'µS/cm', what: 'Electrical conductivity', tip: 'A proxy for dissolved salts and minerals. Jumps after rain or road-salt runoff are worth noticing.' },
+    { name: 'Turbidity', ok: false, unit: 'NTU', what: 'Water clarity', tip: 'Higher means cloudier, from sediment stirred up by storms or from algae.' },
+    { name: 'ORP', ok: false, unit: 'mV', what: 'Oxidation-reduction potential', tip: 'Sustained low values alongside low oxygen can point to decaying organic matter such as sewage.' },
   ];
 
   const quickRanges = [
@@ -249,11 +249,11 @@ export default function DashboardPage() {
         <img src="/media/photos/buoy-launch-2026-11-wide.jpg" alt="The Aqua Guardian buoy floating on Lake Elkhorn" className="dash-hero-img" />
         <div className="dash-hero-overlay" />
         <div className="dash-hero-inner">
-          <p className="dash-eyebrow"><span className="dash-live-dot" /> Aqua Guardian · Lake Elkhorn</p>
-          <h1>Water Quality Dashboard</h1>
+          <p className="dash-eyebrow">Aqua Guardian · Lake Elkhorn</p>
+          <h1>Data Explorer</h1>
           <p className="dash-lede">
-            Pick a time window and we will pull every reading the buoy sent during it, then show how each sensor moved, which readings
-            strayed from normal, and what that could mean for the lake.
+            Choose a time range and we will pull the buoy&apos;s readings for it, then show how each sensor changed and how far the readings
+            sat from their usual values. For the most recent reading, see the live data card on the <a href="/#live-data">home page</a>.
           </p>
           {showDashboard && dashboardData && (
             <div className="dash-hero-meta">
@@ -327,33 +327,34 @@ export default function DashboardPage() {
                 <div className="about-buoy-body">
                   <h3>About this buoy</h3>
                   <ul>
-                    <li><strong>Launched</strong> November 11, 2026 on Lake Elkhorn, Columbia, MD</li>
+                    <li><strong>Status</strong> Fully deployed on Lake Elkhorn, Columbia, MD</li>
                     <li><strong>Power</strong> solar panel and battery; sleeps between readings</li>
                     <li><strong>Reporting</strong> sends a batch of readings over cellular on a regular cycle (about every 45 minutes in our firmware)</li>
                     <li><strong>Sensors</strong> pH, dissolved oxygen, conductivity, turbidity, temperature and ORP</li>
                   </ul>
                   <div className="note">
                     <Info size={16} />
-                    <span>Five of the probes are still being calibrated, so treat values as trends rather than lab-grade measurements.</span>
+                    <span>Only water temperature, internal air temperature and conductivity are reading correctly right now. pH, dissolved oxygen, ORP and turbidity are not calibrated yet, so ignore those values.</span>
                   </div>
-                  <a className="text-link" href="/journey">Read how we built and launched it <ArrowRight size={14} /></a>
+                  <a className="text-link" href="/journey">See how it was built <ArrowRight size={14} /></a>
                 </div>
               </aside>
             </div>
 
             <section className="guide-section">
-              <h2 className="section-title">How to read the dashboard</h2>
+              <h2 className="section-title">How to read the Data Explorer</h2>
               <div className="steps-row">
                 <div className="step"><span className="step-num">1</span><h3>Choose a window</h3><p>We fetch every reading in that time range. Longer windows show trends; shorter ones show detail.</p></div>
                 <div className="step"><span className="step-num">2</span><h3>Check the summary</h3><p>Three cards give an overall traffic-light status plus algae-bloom and pollution risk scores.</p></div>
                 <div className="step"><span className="step-num">3</span><h3>Dig into the charts</h3><p>Raw values, deviations from this lake&apos;s own baseline, and smoothed moving averages tell the story.</p></div>
               </div>
 
-              <h2 className="section-title" style={{marginTop: '40px'}}>What each sensor tells us</h2>
+              <h2 className="section-title" style={{marginTop: '40px'}}>What each sensor measures</h2>
               <div className="sensor-guide">
                 {sensorGuide.map(sn => (
                   <div className="sensor-item" key={sn.name}>
                     <div className="sensor-head"><span className="sensor-name">{sn.name}</span>{sn.unit && <span className="sensor-unit">{sn.unit}</span>}</div>
+                    <span className={`sensor-flag ${sn.ok ? 'flag-ok' : 'flag-bad'}`}>{sn.ok ? 'Reading correctly' : 'Not calibrated, ignore'}</span>
                     <div className="sensor-what">{sn.what}</div>
                     <p>{sn.tip}</p>
                   </div>
@@ -370,24 +371,32 @@ export default function DashboardPage() {
               <button onClick={() => setShowDashboard(false)} className="secondary-btn">Change range</button>
             </div>
 
+            <div className="note note-wide" style={{marginTop: 0}}>
+              <Info size={16} />
+              <span>
+                <strong>Calibration in progress.</strong> Only water temperature, internal air temperature and conductivity (EC) are reading correctly right now.
+                pH, dissolved oxygen, ORP and turbidity are not calibrated, so ignore those lines and any score that uses them.
+              </span>
+            </div>
+
             <div className="metrics-row">
               <div className="metric-card">
                 <div className="metric-title">Overall status</div>
                 <div className={`safety-light safety-${dashboardData.derived_metrics.water_quality_status.toLowerCase()}`}></div>
                 <div className="analysis-text">{dashboardData.derived_metrics.water_quality_status}</div>
-                <p className="metric-help">A traffic-light summary of how far current readings sit from this lake&apos;s normal baseline.</p>
+                <p className="metric-help">A traffic-light summary of how far current readings sit from their usual values. It includes probes that are not calibrated yet, so ignore it for now.</p>
               </div>
               <div className="metric-card">
                 <div className="metric-title">Algae risk</div>
                 <div className="metric-value">{dashboardData.derived_metrics.algae_bloom_risk.risk_score}%</div>
                 <div className="analysis-text">{dashboardData.derived_metrics.algae_bloom_risk.analysis}</div>
-                <p className="metric-help">Combines rising temperature, turbidity and pH with big swings in dissolved oxygen, which are typical of algal blooms.</p>
+                <p className="metric-help">Built from temperature, turbidity, pH and dissolved oxygen. Several of those probes are not calibrated yet, so ignore this score for now.</p>
               </div>
               <div className="metric-card">
                 <div className="metric-title">Pollution</div>
                 <div className="metric-value">{dashboardData.derived_metrics.chemical_pollution.pollution_score}%</div>
                 <div className="analysis-text">{dashboardData.derived_metrics.chemical_pollution.analysis}</div>
-                <p className="metric-help">Flags extreme pH, unusually high conductivity or abnormal ORP that could indicate chemical or industrial pollution.</p>
+                <p className="metric-help">Looks at pH, conductivity and ORP. pH and ORP are not calibrated yet, so ignore this score for now.</p>
               </div>
             </div>
 
@@ -435,8 +444,8 @@ export default function DashboardPage() {
             <div className="note note-wide">
               <Info size={16} />
               <span>
-                Readings are still being calibrated against reference solutions (pH, dissolved oxygen, ORP, turbidity and conductivity), so absolute values may shift.
-                The leak indicator is driven by the humidity sensor inside the hull, so treat it as a prompt to check, not proof.
+                The pH, dissolved oxygen, ORP and turbidity probes are still waiting to be calibrated against reference solutions.
+                The leak indicator is based on the humidity sensor inside the hull, so it is a cue to take a closer look.
               </span>
             </div>
 

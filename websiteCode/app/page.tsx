@@ -35,15 +35,15 @@ export default function HomePage() {
   const closeProject = () => setSelectedProject(null);
 
   const stats = [
-    { value: 'Nov 11, 2026', label: 'Launched on Lake Elkhorn' },
+    { value: 'Fully Deployed', label: 'on Lake Elkhorn, Columbia, MD' },
     { value: '6', label: 'water-quality probes on board' },
-    { value: 'Top 2', label: 'Maryland teams in the Solve for Tomorrow semifinals' },
-    { value: '$10,000', label: 'won for Atholton High School' },
+    { value: 'Solar', label: 'powered, with a battery backup' },
+    { value: 'Cellular + GPS', label: 'sends readings from the lake' },
   ];
 
   const explore = [
-    { href: '/dashboard', icon: Activity, title: 'Live Dashboard', text: 'Pick any date range and see raw readings, deviations, moving averages and risk scores.', accent: true },
-    { href: '/journey', icon: Compass, title: 'Our Journey', text: 'From a sewage-overflow headline to a buoy floating on a lake, with the photos and videos.' },
+    { href: '/dashboard', icon: Activity, title: 'Data Explorer', text: 'Choose a time range and look at the buoy\'s readings, averages and deviations.', accent: true },
+    { href: '/journey', icon: Compass, title: 'Our Journey', text: 'How the project came together, with photos and videos.' },
     { href: '/projects', icon: FolderGit2, title: 'Projects', text: 'The parts list, the CAD, the code, and how every piece fits together.' },
     { href: '/about', icon: Users, title: 'The Team', text: 'Meet the students and mentors behind the club.' },
   ];
@@ -53,7 +53,7 @@ export default function HomePage() {
     { icon: Cpu, title: 'Think', text: 'An ESP32 samples, then deep-sleeps to sip power from the solar-charged battery.' },
     { icon: Radio, title: 'Send', text: 'A cellular + GPS modem uploads every reading from the middle of the lake.' },
     { icon: Database, title: 'Store', text: 'Readings land in our cloud database the moment they arrive.' },
-    { icon: Gauge, title: 'Explain', text: 'The dashboard turns numbers into baselines, deviations and plain-language risk.' },
+    { icon: Gauge, title: 'Explain', text: 'The Data Explorer shows each sensor\'s readings, baselines and deviations over any time range.' },
   ];
 
   return (
@@ -74,19 +74,19 @@ export default function HomePage() {
               Atholton High School · Electronics Club
             </p>
             <h1 className="font-display text-5xl font-extrabold leading-[1.02] tracking-tight md:text-7xl">
-              We built a buoy.<br />
-              <span className="text-mint-300">It&apos;s floating in Lake Elkhorn.</span>
+              A water-quality buoy<br />
+              <span className="text-mint-300">built by Atholton students.</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-forest-100 md:text-xl">
-              Aqua Guardian is a student-built, solar-powered water-quality station that measures the lake around the clock and
-              uploads what it finds so anyone can check it. Watch the data come in live.
+              Aqua Guardian is a solar-powered buoy on Lake Elkhorn. It measures the water and sends its readings online, and the
+              latest one is shown below.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button href="/dashboard" size="lg">
-                <Activity size={20} /> Open the live dashboard
+              <Button href="#live-data" size="lg">
+                See the latest reading
               </Button>
-              <Button href="/journey" variant="outline" size="lg">
-                Follow the build <ArrowRight size={18} />
+              <Button href="/dashboard" variant="outline" size="lg">
+                <Activity size={20} /> Open the Data Explorer
               </Button>
             </div>
           </div>
@@ -106,10 +106,10 @@ export default function HomePage() {
       </section>
 
       {/* ───────────── LIVE DATA ───────────── */}
-      <section className="mx-auto mt-24 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section id="live-data" className="mx-auto mt-24 max-w-7xl scroll-mt-24 px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Right now"
-          title="What the lake looks like this minute"
+          eyebrow="Live data"
+          title="The latest reading from the buoy"
           subtitle="This card shows the most recent reading the buoy sent home. It updates each time the buoy wakes up, measures and uploads."
         />
         <div className="grid items-start gap-8 lg:grid-cols-5">
@@ -129,18 +129,18 @@ export default function HomePage() {
             <Photo
               src="/media/photos/buoy-launch-2026-11-close.jpg"
               alt="Close-up of the buoy with its solar panel catching the light"
-              caption="The buoy this season, on its anchor in Lake Elkhorn."
+              caption="Aqua Guardian on Lake Elkhorn."
               className="aspect-[4/3]"
               imgClassName="aspect-[4/3]"
             />
             <div className="rounded-2xl border border-forest-100 bg-white p-6 shadow-soft">
-              <h3 className="font-display text-xl font-bold text-forest-900">Want more than the latest reading?</h3>
+              <h3 className="font-display text-xl font-bold text-forest-900">Looking for older readings?</h3>
               <p className="mt-2 text-gray-600">
-                The dashboard lets you pick any time window and see how every sensor moved, which readings strayed from normal,
-                and an algae and pollution risk score.
+                The Data Explorer lets you pick a time range and see how each sensor changed over it, and how far readings sat from
+                their usual values.
               </p>
               <Button href="/dashboard" className="mt-5" variant="dark">
-                Run an analysis <ArrowRight size={16} />
+                Open the Data Explorer <ArrowRight size={16} />
               </Button>
             </div>
           </aside>
@@ -173,19 +173,18 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <p className="eyebrow !text-mint-300 mb-3">The story so far</p>
-              <h2 className="font-display text-3xl font-bold md:text-4xl">Two winters, one very orange buoy.</h2>
+              <p className="eyebrow !text-mint-300 mb-3">The project</p>
+              <h2 className="font-display text-3xl font-bold md:text-4xl">How it came together</h2>
               <p className="mt-5 text-lg leading-relaxed text-forest-100">
-                We started with a headline about a sewage overflow. A year later, we had designed, printed, sealed and wired a
-                buoy, tested it through a frozen lake in February, and launched it into open water on November 11, 2026 with
-                help from a Columbia Association crew.
+                The idea came from local water problems we ran into. Over the following year we designed, printed, sealed and wired the
+                buoy, tested it on a frozen lake in February, and set it in Lake Elkhorn on November 11, 2026 with help from a
+                Columbia Association crew. It is now fully deployed.
               </p>
               <p className="mt-4 leading-relaxed text-forest-200">
-                Along the way we became a Samsung Solve for Tomorrow national semifinalist, one of just two teams from Maryland,
-                and won $10,000 for our school.
+                The project was also a Samsung Solve for Tomorrow national semifinalist.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button href="/journey">Read the full journey <ArrowRight size={16} /></Button>
+                <Button href="/journey">See the timeline <ArrowRight size={16} /></Button>
                 <Button href="/projects" variant="outline">See how it&apos;s built</Button>
               </div>
             </div>
@@ -193,7 +192,7 @@ export default function HomePage() {
               <Video
                 src="/media/video/buoy-launch-2026-11-lake-assembly.mp4"
                 poster="/media/photos/buoy-launch-2026-11-lake-assembly.jpg"
-                caption="Launch day: assembling the buoy on the dock at Lake Elkhorn."
+                caption="Assembling the buoy on the dock at Lake Elkhorn."
               />
               <div className="grid grid-cols-2 gap-4">
                 <Photo src="/media/photos/aqua-guardian-workbench.jpg" alt="A team member working on the buoy hull in the lab" caption="In the lab" className="aspect-[4/3]" imgClassName="aspect-[4/3]" focus="50% 40%" />
@@ -206,7 +205,7 @@ export default function HomePage() {
 
       {/* ───────────── EXPLORE ───────────── */}
       <section className="mx-auto mt-28 max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Explore the site" title="Where would you like to start?" />
+        <SectionHeading eyebrow="Explore the site" title="Find your way around" />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {explore.map((e) => (
             <Link

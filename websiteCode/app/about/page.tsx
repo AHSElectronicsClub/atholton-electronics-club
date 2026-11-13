@@ -35,14 +35,14 @@ const PersonCard = ({ person, large = false }: { person: { name: string; title: 
 const pillars = [
   { icon: Wrench, title: 'Mechanical', text: 'CAD, 3D printing, hull design and sealing, solar mounts. For Aqua Guardian this meant a floating ASA hull, A-frame solar panels and a foam stabilizing ring.' },
   { icon: Cpu, title: 'Electrical', text: 'Sensors, power and wiring: probes, a microcontroller, a cellular modem, a battery with protection circuitry and a solar charge controller.' },
-  { icon: Code2, title: 'Software', text: 'Embedded firmware, a cloud API and database, and the live dashboard and analysis you can use on this site.' },
+  { icon: Code2, title: 'Software', text: 'Embedded firmware, a cloud API and database, and the live data card and Data Explorer on this site.' },
 ];
 
 const milestones = [
   { icon: Users, value: '~35', label: 'student members' },
   { icon: Leaf, value: '2025', label: 'founded at Atholton High' },
-  { icon: Trophy, value: 'Top 2', label: 'Maryland teams in the Solve for Tomorrow semifinals' },
-  { icon: Target, value: '$10,000', label: 'won for our school' },
+  { icon: Trophy, value: 'Semifinalist', label: 'Samsung Solve for Tomorrow, 2026' },
+  { icon: Target, value: 'Fully Deployed', label: 'Aqua Guardian on Lake Elkhorn' },
 ];
 
 export default function AboutPage() {
@@ -50,8 +50,8 @@ export default function AboutPage() {
     <div>
       <PageHero
         eyebrow="About us"
-        title="Students who build real things"
-        subtitle="The Atholton Electronics Club gives students hands-on experience in electronics, programming and environmental technology, on projects that matter beyond the classroom."
+        title="About the club"
+        subtitle="We are a group of Atholton students who build electronics projects together, from circuits and 3D-printed parts to code."
         image="/media/photos/buoy-launch-2026-11-fall-shoreline.jpg"
         imageAlt="The orange Aqua Guardian buoy floating on Lake Elkhorn"
         focus="50% 80%"
@@ -75,29 +75,28 @@ export default function AboutPage() {
         {/* Story */}
         <section className="mb-24 grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <SectionHeading eyebrow="Our story" title="Started in 2025, already on a lake" />
+            <SectionHeading eyebrow="Our story" title="How the club started" />
             <div className="-mt-4 space-y-4 text-lg leading-relaxed text-gray-700">
               <p>
                 Founded in 2025 at Atholton High School, the Atholton Electronics Club was established to provide students with hands-on
                 experience in electrical engineering and applied technology.
               </p>
               <p>
-                With a growing membership of approximately 35 students, the club focuses on designing and building real-world engineering
+                With a growing membership of approximately 35 students, the club focuses on designing and building engineering
                 projects that both educate members and benefit the broader community.
               </p>
               <p>
-                Our first big project, <strong className="text-forest-800">Aqua Guardian</strong>, began after a sewage overflow and algal-bloom advisories in our
-                own county. It became a solar-powered, cellular-connected water-quality buoy that made the Samsung Solve for Tomorrow national
-                semifinals and was launched on Lake Elkhorn on November 11, 2026.
+                Our first big project, <strong className="text-forest-800">Aqua Guardian</strong>, grew out of local water problems like algal blooms and
+                sewage overflows. It is a solar-powered, cellular-connected water-quality buoy, now fully deployed on Lake Elkhorn.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button href="/journey" variant="dark">Read the whole story</Button>
-                <Button href="/dashboard" variant="secondary">See the live data</Button>
+                <Button href="/journey" variant="dark">See the timeline</Button>
+                <Button href="/#live-data" variant="secondary">See the latest reading</Button>
               </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Photo src="/media/photos/buoy-launch-2026-11-dock-prep.jpg" alt="Two club members finishing assembly of the buoy on the dock" caption="Launch day, Lake Elkhorn" className="col-span-2" imgClassName="aspect-[16/9]" focus="50% 35%" />
+            <Photo src="/media/photos/buoy-launch-2026-11-dock-prep.jpg" alt="Two club members finishing assembly of the buoy on the dock" caption="Deployment day, Lake Elkhorn" className="col-span-2" imgClassName="aspect-[16/9]" focus="50% 35%" />
             <Photo src="/media/photos/lake-test-ice-opening.jpg" alt="Club members at an ice opening testing the buoy" caption="Ice test, February 2026" imgClassName="aspect-[4/3]" />
             <Photo src="/media/photos/aqua-guardian-workbench.jpg" alt="A member sealing the buoy hull at the workbench" caption="Hull work in the lab" imgClassName="aspect-[4/3]" focus="50% 40%" />
           </div>
@@ -105,12 +104,12 @@ export default function AboutPage() {
 
         {/* Mission */}
         <section className="mb-24 overflow-hidden rounded-3xl bg-hero-gradient p-8 text-white shadow-lift md:p-14">
-          <p className="eyebrow !text-mint-300 mb-3">Our mission</p>
+          <p className="eyebrow !text-mint-300 mb-3">Our goal</p>
           <p className="max-w-4xl font-display text-2xl font-bold leading-snug md:text-4xl">
-            Give students hands-on experience in electronics, programming and environmental technology, and use it to serve our community.
+            Give students hands-on experience in electronics, programming and environmental technology.
           </p>
           <p className="mt-6 max-w-3xl text-lg leading-relaxed text-forest-100">
-            We build real-world projects, mentor each other, and contribute to our local community through technology and innovation.
+            We build projects together, help each other learn, and look for ways our work can be useful to the local community.
           </p>
         </section>
 

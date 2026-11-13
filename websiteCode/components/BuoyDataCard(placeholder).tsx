@@ -96,11 +96,11 @@ export const BuoyDataCard: React.FC<{ data: BuoyData; showDashboardLink?: boolea
         <h3 className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-forest-500">Water quality</h3>
         <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3">
           <MetricItem icon={<Thermometer />} label="Water Temp" value={formatVal(data.temp, 1, '°C')} hint="Warmer water holds less oxygen and fuels algae growth." color="text-orange-600" />
-          <MetricItem icon={<Droplet />} label="pH Level" value={formatVal(data.ph, 2)} hint="Healthy lakes sit around 6.5 to 8.5." color="text-sky-600" />
-          <MetricItem icon={<Activity />} label="Dis. Oxygen" value={formatVal(data.DO, 1, ' mg/L')} hint="What fish breathe. Below ~5 mg/L stresses aquatic life." color="text-cyan-600" />
+          <MetricItem icon={<Droplet />} label="pH Level" value={formatVal(data.ph, 2)} hint="Healthy lakes sit around 6.5 to 8.5." color="text-sky-600" uncalibrated />
+          <MetricItem icon={<Activity />} label="Dis. Oxygen" value={formatVal(data.DO, 1, ' mg/L')} hint="What fish breathe. Below ~5 mg/L stresses aquatic life." color="text-cyan-600" uncalibrated />
           <MetricItem icon={<Zap />} label="Conductivity" value={formatVal(data.ec, 0, ' µS/cm')} hint="Dissolved salts and minerals. Spikes can mean runoff." color="text-purple-600" />
-          <MetricItem icon={<Activity />} label="Turbidity" value={formatVal(data.turbidity, 1, ' NTU')} hint="How cloudy the water is, from sediment or algae." color="text-amber-600" />
-          <MetricItem icon={<Activity />} label="ORP" value={formatVal(data.orp, 0, ' mV')} hint="Oxidation-reduction potential: a clue to organic pollution." color="text-indigo-600" />
+          <MetricItem icon={<Activity />} label="Turbidity" value={formatVal(data.turbidity, 1, ' NTU')} hint="How cloudy the water is, from sediment or algae." color="text-amber-600" uncalibrated />
+          <MetricItem icon={<Activity />} label="ORP" value={formatVal(data.orp, 0, ' mV')} hint="Oxidation-reduction potential: a clue to organic pollution." color="text-indigo-600" uncalibrated />
         </div>
 
         <h3 className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-forest-500">Inside the buoy</h3>
@@ -149,7 +149,7 @@ export const BuoyDataCard: React.FC<{ data: BuoyData; showDashboardLink?: boolea
         <div className="mt-4 flex items-start gap-2 rounded-xl bg-buoy-500/10 px-3 py-2.5 text-xs leading-relaxed text-buoy-700">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>
-            We are still calibrating pH, dissolved oxygen, ORP, turbidity and conductivity, so read these as trends rather than lab-grade values. The leak flag comes from the humidity sensor inside the hull, so treat it as a prompt to check, not proof.
+            Only water temperature, internal air temperature and conductivity are reading correctly right now. pH, dissolved oxygen, ORP and turbidity are not calibrated yet, so please ignore those values. The leak flag is based on the humidity sensor inside the hull, so it is a cue to take a closer look.
           </span>
         </div>
 
@@ -159,7 +159,7 @@ export const BuoyDataCard: React.FC<{ data: BuoyData; showDashboardLink?: boolea
           </span>
           {showDashboardLink && (
             <a href="/dashboard" className="inline-flex items-center gap-1.5 text-sm font-semibold text-buoy-600 hover:text-buoy-700">
-              Explore trends in the full dashboard <ArrowRight size={16} />
+              Open the Data Explorer <ArrowRight size={16} />
             </a>
           )}
         </div>
@@ -168,13 +168,16 @@ export const BuoyDataCard: React.FC<{ data: BuoyData; showDashboardLink?: boolea
   );
 };
 
-const MetricItem = ({ icon, label, value, color, hint }: { icon: React.ReactNode; label: string; value: string; color: string; hint?: string }) => (
-  <div className="flex flex-col rounded-xl border border-forest-100 bg-forest-50/60 p-3 transition-shadow hover:shadow-md">
-    <div className={`mb-2 flex items-center gap-2 ${color}`}>
+const MetricItem = ({ icon, label, value, color, hint, uncalibrated = false }: { icon: React.ReactNode; label: string; value: string; color: string; hint?: string; uncalibrated?: boolean }) => (
+  <div className={`relative flex flex-col rounded-xl border p-3 transition-shadow hover:shadow-md ${uncalibrated ? 'border-dashed border-gray-300 bg-gray-100/70' : 'border-forest-100 bg-forest-50/60'}`}>
+    {uncalibrated && (
+      <span className="absolute right-2 top-2 rounded-full bg-gray-300 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gray-700">Not calibrated</span>
+    )}
+    <div className={`mb-2 flex items-center gap-2 ${uncalibrated ? 'text-gray-400' : color}`}>
       {React.cloneElement(icon as React.ReactElement, { size: 18 } as { size?: number })}
       <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{label}</span>
     </div>
-    <div className="text-xl font-semibold text-gray-900">{value}</div>
+    <div className={`text-xl font-semibold ${uncalibrated ? 'text-gray-400' : 'text-gray-900'}`}>{value}</div>
     {hint && <p className="mt-1 text-xs leading-snug text-gray-500">{hint}</p>}
   </div>
 );

@@ -30,51 +30,70 @@ const ResourceCard = ({ resource }: { resource: typeof RESOURCES_DATA[0] }) => {
   );
 };
 
-// A real excerpt from the Aqua Guardian firmware (modem.cpp): reading GPS from the SIM7670G.
+// Excerpt from the Aqua Guardian firmware (src/main.cpp). The "..." comment marks where lines are left out.
 const exampleCode = `
 /**
- * @brief Gets GPS coordinates using SIM7670G compatible command (AT+CGNSSINFO).
+ * @brief Main logging loop. Runs for a fixed duration, sampling sensors.
  */
-bool modem_get_gps(float& lat, float& lon) {
-    modem.sendAT(GF("+CGNSSINFO"));
-    if (modem.waitResponse(2000L, GF("+CGNSSINFO:")) != 1) {
-        return false;
+void run_logging_window() {
+    Serial.println("\\n--- STARTING LOGGING WINDOW ---");
+    
+    // Calculate total logging duration from config
+    const unsigned long logging_duration_ms = MAX_SAMPLES_PER_SESSION * SENSOR_READ_INTERVAL_MS;
+    unsigned long logging_start_time = millis();
+    unsigned long next_sample_time = logging_start_time;
+
+    session_data.sample_count = 0;
+
+    while (millis() - logging_start_time < logging_duration_ms) {
+        if (millis() >= next_sample_time) {
+            
+            Serial.printf("Taking sample %d/%d...\\n", session_data.sample_count + 1, MAX_SAMPLES_PER_SESSION);
+            
+            SensorSample sample;
+            sample.time = modem_get_utc_time(); 
+            sensors_read_all(sample); 
+            
+            // --- NEW: HUMIDITY LEAK DETECTION ---
+            // If internal humidity exceeds 85%, assume water ingress
+            if (sample.humidity > 85.0) {
+                session_data.water_leak = true;
+                Serial.println("WARNING: High internal humidity! Flagging water leak.");
+            }
+            
+            // Add sample to the session data
+            if (session_data.sample_count < MAX_SAMPLES_PER_SESSION) {
+                session_data.samples[session_data.sample_count] = sample;
+                session_data.sample_count++;
+            }
+
+            // Schedule next sample
+            next_sample_time += SENSOR_READ_INTERVAL_MS;
+        }
+        // Small delay to prevent busy-looping
+        delay(10); 
     }
+    // ... (saves the session to a file after the loop)
+}
 
-    String res = modem.stream.readStringUntil('\\n');
-    modem.waitResponse();
-
-    // Find comma indices to extract lat/lon fields
-    int commas[9];
-    int pos = -1;
-    for (int i = 0; i < 9; i++) {
-        pos = res.indexOf(',', pos + 1);
-        if (pos == -1) return false;
-        commas[i] = pos;
-    }
-
-    String latStr = res.substring(commas[4] + 1, commas[5]);
-    String latDir = res.substring(commas[5] + 1, commas[6]);
-    String lonStr = res.substring(commas[6] + 1, commas[7]);
-    String lonDir = res.substring(commas[7] + 1, commas[8]);
-
-    if (latStr.length() == 0 || lonStr.length() == 0) {
-        return false;
-    }
-
-    lat = latStr.toFloat();
-    lon = lonStr.toFloat();
-
-    if (latDir.equalsIgnoreCase("S")) lat = -lat;
-    if (lonDir.equalsIgnoreCase("W")) lon = -lon;
-
-    return (lat != 0.0 || lon != 0.0);
+/**
+ * @brief Enters deep sleep for the configured duration.
+ */
+void go_to_sleep() {
+    Serial.printf("Entering deep sleep for %d seconds.\\n", DEEP_SLEEP_DURATION_SEC);
+    Serial.flush();
+    
+    // Configure timer wakeup
+    esp_sleep_enable_timer_wakeup(DEEP_SLEEP_DURATION_SEC * 1000000ULL);
+    
+    // Enter deep sleep
+    esp_deep_sleep_start();
 }
 `;
 
 const onSite = [
-  { href: '/dashboard', icon: Activity, title: 'Live Dashboard', text: 'Explore the buoy\'s data over any time window.' },
-  { href: '/journey', icon: Compass, title: 'Our Journey', text: 'Photos, video and the story of the build.' },
+  { href: '/dashboard', icon: Activity, title: 'Data Explorer', text: 'Look at the buoy\'s readings over any time range.' },
+  { href: '/journey', icon: Compass, title: 'Timeline', text: 'Photos and video from the build and deployment.' },
   { href: '/projects', icon: FolderGit2, title: 'Projects', text: 'Parts lists, CAD and code for what we make.' },
 ];
 
@@ -115,9 +134,9 @@ export default function ResourcesPage() {
 
         <section className="mb-20">
           <SectionHeading
-            eyebrow="Real code"
-            title="A peek at the buoy's firmware"
-            subtitle="The Aqua Guardian runs C++ on an ESP32 (built with PlatformIO). This function asks the cellular modem for its GPS fix so every upload carries the buoy's location."
+            eyebrow="Firmware"
+            title="A look at the buoy's firmware"
+            subtitle="The buoy runs C++ on an ESP32, built with PlatformIO. This is the logging loop that samples the sensors and checks for a leak, followed by the function that puts the board into deep sleep between cycles."
           />
           <CodeSnippet language="cpp" codeString={exampleCode} />
           <p className="mt-3 text-sm text-gray-500">

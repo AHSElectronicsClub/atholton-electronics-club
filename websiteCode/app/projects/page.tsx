@@ -35,13 +35,13 @@ export default function ProjectsPage() {
       <PageHero
         eyebrow="What we build"
         title="Club projects"
-        subtitle="Everything we make is built by students, tested in the real world, and open source."
+        subtitle="Everything here is built by students, and our code is open source."
         image="/media/photos/aqua-guardian-workbench.jpg"
         imageAlt="A club member working on the orange buoy hull at the workbench"
         focus="50% 35%"
       >
-        <Button href="/dashboard">See it running live <ArrowRight size={16} /></Button>
-        <Button href="/journey" variant="outline">How we built it</Button>
+        <Button href="/#live-data">See the latest reading <ArrowRight size={16} /></Button>
+        <Button href="/journey" variant="outline">How it was built</Button>
       </PageHero>
 
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
@@ -97,7 +97,7 @@ export default function ProjectsPage() {
         {/* Aqua Guardian deep dive */}
         <section className="mt-24">
           <p className="eyebrow mb-3">Featured build</p>
-          <h2 className="font-display text-3xl font-bold text-forest-900 md:text-4xl">Aqua Guardian, from CAD to the lake</h2>
+          <h2 className="font-display text-3xl font-bold text-forest-900 md:text-4xl">Aqua Guardian in detail</h2>
           <div className="mt-8 grid items-center gap-10 lg:grid-cols-2">
             <div className="space-y-4 text-lg leading-relaxed text-gray-700">
               <p>
@@ -110,7 +110,7 @@ export default function ProjectsPage() {
                 electronics.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button href="/journey" variant="dark">Read the build story</Button>
+                <Button href="/journey" variant="dark">See the timeline</Button>
                 <Button href="https://a360.co/4sSlGQV" target="_blank" variant="secondary">Spin the 3D model</Button>
                 <Button href="https://github.com/AHSElectronicsClub/atholton-electronics-club" target="_blank" variant="secondary">Firmware &amp; server code</Button>
               </div>
@@ -118,7 +118,7 @@ export default function ProjectsPage() {
             <div className="grid grid-cols-2 gap-4">
               <Photo src="/images/buoyCAD.jpg" alt="CAD render of the buoy" caption="CAD render" className="aspect-square" imgClassName="aspect-square object-contain bg-white p-4" />
               <Photo src="/media/photos/aqua-guardian-inside-poster.jpg" alt="Top-down view inside the hull with microcontroller, modem and wiring" caption="Inside the hull" className="aspect-square" imgClassName="aspect-square" />
-              <Photo src="/media/photos/buoy-launch-2026-11-dock-prep.jpg" alt="Two club members assembling the buoy on a dock" caption="Final assembly, launch day" className="col-span-2" imgClassName="aspect-[16/8]" focus="50% 40%" />
+              <Photo src="/media/photos/buoy-launch-2026-11-dock-prep.jpg" alt="Two club members assembling the buoy on a dock" caption="Final assembly on the dock" className="col-span-2" imgClassName="aspect-[16/8]" focus="50% 40%" />
             </div>
           </div>
         </section>

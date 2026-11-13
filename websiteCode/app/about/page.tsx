@@ -39,7 +39,7 @@ const pillars = [
 ];
 
 const milestones = [
-  { icon: Users, value: '~35', label: 'student members' },
+  { icon: Users, value: '~20', label: 'student members' },
   { icon: Leaf, value: '2025', label: 'founded at Atholton High' },
   { icon: Trophy, value: 'Semifinalist', label: 'Samsung Solve for Tomorrow, 2026' },
   { icon: Target, value: 'Fully Deployed', label: 'Aqua Guardian on Lake Elkhorn' },
@@ -82,7 +82,7 @@ export default function AboutPage() {
                 experience in electrical engineering and applied technology.
               </p>
               <p>
-                With a growing membership of approximately 35 students, the club focuses on designing and building engineering
+                With a growing membership of approximately 20 students, the club focuses on designing and building engineering
                 projects that both educate members and benefit the broader community.
               </p>
               <p>
